@@ -22,7 +22,7 @@
     ],
     "homepage": "https://github.com/sameoldnick/larahostpack",
     "require": {
-        "php": "^8.2",
+        "php": "^8.1",
         "ext-zip": "*",
         "composer/semver": "^3.4",
         "ifsnop/mysqldump-php": "^2.12",
