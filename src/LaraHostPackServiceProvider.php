@@ -29,7 +29,7 @@ class LaraHostPackServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__ . '/../config/hostpack.php' => config_path('hostpack.php'),
-        ]);
+        ], 'larahostpack-config');
 
         if ($this->app->runningInConsole()) {
             $this->commands([
