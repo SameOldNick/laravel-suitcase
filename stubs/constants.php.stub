@@ -1,0 +1,6 @@
+<?php
+
+define('LARAVEL_PUBLIC_DIR', __DIR__);
+define('LARAVEL_ROOT_DIR', {{ laravelRootDir }});
+
+
