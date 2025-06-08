@@ -53,7 +53,7 @@ class LaraHostPackServiceProvider extends ServiceProvider
         }
 
         if (config('hostpack.shared_hosting')) {
-            $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+            $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
         }
     }
 }
