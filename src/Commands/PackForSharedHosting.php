@@ -4,6 +4,7 @@ namespace SameOldNick\LaraHostPack\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use SameOldNick\LaraHostPack\Config\Repositories\ConfigRepository;
 use SameOldNick\LaraHostPack\Contracts\Config\PackConfig;
 use SameOldNick\LaraHostPack\Contracts\EnvVariables;
 use SameOldNick\LaraHostPack\Support\EventDispatcher;
@@ -33,7 +34,7 @@ class PackForSharedHosting extends Command
         $this->newLine();
 
         $this->info('Please ensure the config file is set up correctly.');
-        $this->info('You can find the config file at: '.config_path('hostpack.php'));
+        $this->info('You can find the config file at: ' . config_path(ConfigRepository::getConfigRootKey() . '.php'));
         $this->newLine();
 
         if (! $this->setConfig($config)->validateConfig()) {
