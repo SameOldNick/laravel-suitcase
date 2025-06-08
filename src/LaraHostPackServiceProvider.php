@@ -47,7 +47,7 @@ class LaraHostPackServiceProvider extends ServiceProvider
         ], 'larahostpack-config');
 
         $this->publishes([
-            __DIR__ . '/../stubs/env.stub' => base_path('.env.shared'),
+            __DIR__.'/../stubs/env.stub' => base_path('.env.shared'),
         ], 'larahostpack-env');
 
         if ($this->app->runningInConsole()) {
