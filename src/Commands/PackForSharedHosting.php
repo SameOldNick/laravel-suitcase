@@ -34,7 +34,7 @@ class PackForSharedHosting extends Command
         $this->newLine();
 
         $this->info('Please ensure the config file is set up correctly.');
-        $this->info('You can find the config file at: ' . config_path(ConfigRepository::getConfigRootKey() . '.php'));
+        $this->info('You can find the config file at: '.config_path(ConfigRepository::getConfigRootKey().'.php'));
         $this->newLine();
 
         if (! $this->setConfig($config)->validateConfig()) {
