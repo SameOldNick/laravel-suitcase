@@ -13,15 +13,15 @@ class DefaultValidator implements ValidatesConfig
      */
     public function validate(PackConfigContract $packConfig): void
     {
-        if (empty($this->config['export_dir'])) {
+        if (empty($packConfig->getExportPath())) {
             throw new \InvalidArgumentException('Export directory is not set in the configuration.');
         }
 
-        if (empty($this->config['zip_name'])) {
+        if (empty($packConfig->getZipPath())) {
             throw new \InvalidArgumentException('Zip name is not set in the configuration.');
         }
 
-        if (empty($this->config['env_file'])) {
+        if (empty($packConfig->getEnvFilePath())) {
             throw new \InvalidArgumentException('Env file path is not set in the configuration.');
         }
 
