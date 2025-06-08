@@ -18,7 +18,7 @@ class PackForSharedHosting extends Command
     use Concerns\PreparesDirectories;
     use Concerns\PreparesFiles;
 
-    protected $signature = 'hostpack
+    protected $signature = 'larahostpack
                             {--skip-vendor : Skip vendor directory}
                             {--skip-env : Skip .env file}';
 
@@ -61,7 +61,7 @@ class PackForSharedHosting extends Command
         }
 
         $this->info('Preparing app for shared hosting...');
-        $eventDispatcher->dispatch('hostpack.preparing');
+        $eventDispatcher->dispatch('larahostpack.preparing');
 
         // Create the ZIP file if it doesn't exist
         if (File::put($this->getConfig()->getZipPath(), '') === false) {
@@ -71,15 +71,15 @@ class PackForSharedHosting extends Command
         }
 
         $this->prepareExportDirectories();
-        $eventDispatcher->dispatch('hostpack.directories.prepared');
+        $eventDispatcher->dispatch('larahostpack.directories.prepared');
 
         if ($config->getDbDumpEnabled()) {
             $this->dumpDatabase();
-            $eventDispatcher->dispatch('hostpack.database.dumped');
+            $eventDispatcher->dispatch('larahostpack.database.dumped');
         }
 
         $this->exportFiles();
-        $eventDispatcher->dispatch('hostpack.files.exported');
+        $eventDispatcher->dispatch('larahostpack.files.exported');
 
         // Update index.php to point to the correct Laravel directory
         $this->updateConstantsFile("{$config->getPublicPath()}/constants.php");
@@ -89,22 +89,22 @@ class PackForSharedHosting extends Command
             $destinationEnvFilePath = "{$config->getLaravelPath()}/.env";
             $this->updateEnvFile($destinationEnvFilePath, $envVariables->getCustomizedVariables());
 
-            $eventDispatcher->dispatch('hostpack.env.updated', [
+            $eventDispatcher->dispatch('larahostpack.env.updated', [
                 'envFilePath' => $destinationEnvFilePath,
                 'envVariables' => $envVariables->getCustomizedVariables(),
             ]);
         }
 
         $this->createInstallFile();
-        $eventDispatcher->dispatch('hostpack.install.file.created');
+        $eventDispatcher->dispatch('larahostpack.install.file.created');
 
         $this->zipPackage();
-        $eventDispatcher->dispatch('hostpack.zipped');
+        $eventDispatcher->dispatch('larahostpack.zipped');
 
         $this->newLine();
         $this->info('✅ Package created successfully: '.$this->getConfig()->getZipPath());
 
-        $eventDispatcher->dispatch('hostpack.completed');
+        $eventDispatcher->dispatch('larahostpack.completed');
 
         $this->info('To deploy your app, follow the instructions in the INSTALL.txt file.');
 
