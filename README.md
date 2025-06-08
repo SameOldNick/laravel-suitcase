@@ -1,2 +1,139 @@
 # LaraHostPack
-Laravel apps, ready for shared hosting.
+
+LaraHostPack helps you package your Laravel app for deployment on shared hosting, handling environment setup, file structure, and more.
+
+## Quick Start
+
+1. Install LaraHostPack:
+   ```bash
+   composer require sameoldnick/larahostpack
+   ```
+2. Publish the config and environment files:
+   ```bash
+   php artisan vendor:publish --tag=larahostpack-config
+   php artisan vendor:publish --tag=larahostpack-env
+   ```
+3. Generate an application key for shared hosting:
+   ```bash
+   php artisan --env=shared key:generate
+   ```
+4. Edit `.env.shared` with your database and mail settings.
+5. Prepare your app for production (update dependencies, build assets, run migrations).
+6. Package your app:
+   ```bash
+   php artisan larahostpack
+   ```
+7. Deploy the generated ZIP to your shared hosting and follow the `INSTALL.txt` instructions inside.
+
+## Table of Contents
+- [Limitations](#limitations)
+- [Requirements](#requirements)
+- [Detailed Setup](#detailed-setup)
+  - [Environment File](#environment-file)
+    - [Database Configuration](#database-configuration)
+    - [Mail Configuration](#mail-configuration)
+    - [Additional Configuration](#additional-configuration)
+  - [Preparation](#preparation)
+  - [Package the Laravel App](#package-the-laravel-app)
+
+## Limitations
+
+Shared hosting does not support some features of Laravel, such as:
+
+- Asynchronous queues
+- Broadcasting and WebSockets
+- Artisan commands
+
+If your Laravel app requires these features, you will need a VPS or dedicated server and knowledge of Linux.
+
+## Requirements
+
+- PHP v8.1 or higher
+- Laravel 10.x, 11.x, or 12.x
+
+**Required PHP extensions:**
+
+- pdo
+- pdo_mysql (or pdo_sqlite, pdo_pgsql, etc. for your DB)
+- zip
+
+## Detailed Setup
+
+### 1. Install the Package
+Install LaraHostPack using Composer. This will add it to your Laravel project's dependencies.
+
+```bash
+composer require sameoldnick/larahostpack
+```
+
+### 2. Publish the Config and Environment Files
+Publish the configuration file to `config/larahostpack.php` and the shared environment file to your project root. You can customize these as needed.
+
+```bash
+php artisan vendor:publish --tag=larahostpack-config
+php artisan vendor:publish --tag=larahostpack-env
+```
+
+### 3. Generate the Application Key
+Generate a unique application key for your shared hosting environment. This is important for security—do not reuse keys across installations.
+
+```bash
+php artisan --env=shared key:generate
+```
+
+**Important:** Use a different key for each installation of your Laravel app. Do not use the same key for every installation.
+
+### 4. Edit the Environment File
+Edit the `.env.shared` file to configure your environment variables for the shared hosting environment.
+
+#### Database Configuration
+If you haven't already, create a database in your shared hosting account. Set the database credentials in the `.env.shared` file:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=username_db
+DB_USERNAME=username_user
+DB_PASSWORD=secret
+```
+
+#### Mail Configuration
+Set the mail configuration in the `.env.shared` file. If you have an email account with your hosting provider, you can use SMTP:
+
+```env
+MAIL_MAILER=smtp
+MAIL_SCHEME=smtps
+MAIL_HOST=127.0.0.1
+MAIL_PORT=465
+MAIL_USERNAME="username@yourdomain.com"
+MAIL_PASSWORD=secret
+MAIL_FROM_ADDRESS="username@yourdomain.com"
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+Or use sendmail:
+
+```env
+MAIL_MAILER=sendmail
+```
+
+#### Additional Configuration
+Ensure that the correct environment variables are set. You can reference the `.env` file used for local development to see what variables should be set.
+
+### 5. Prepare Your App for Production
+Before packaging your Laravel app, make sure it is production-ready. LaraHostPack does not run database migrations or build frontend assets; it copies what is available. Be sure to:
+
+- Update Composer dependencies: `composer update`
+- Update NodeJS packages: `npm i`
+- Build frontend assets: `npm run build`
+- Run database migrations: `php artisan migrate`
+
+### 6. Package the Laravel App
+When you're ready, package the Laravel app by running:
+
+```bash
+php artisan larahostpack
+```
+
+Packaging may take several minutes. A ZIP file will be created in the root folder of your Laravel app. Follow the instructions in the `INSTALL.txt` file (inside the ZIP) to deploy to shared hosting.
