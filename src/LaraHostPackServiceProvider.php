@@ -11,15 +11,30 @@ class LaraHostPackServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(
-            Contracts\PackConfig::class,
-            Support\PackConfig::class
-        );
+        $this->registerConfig();
 
         $this->app->bind(
             Contracts\EnvVariables::class,
             Support\EnvVariables::class
         );
+    }
+
+    /**
+     * Register the package configuration.
+     *
+     * @return void
+     */
+    protected function registerConfig()
+    {
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/hostpack.php',
+            'hostpack'
+        );
+
+        $this->app->bind(Contracts\Config\PackConfig::class, Config\PackConfig::class);
+        $this->app->bind(Contracts\Config\Options::class, Config\Options::class);
+        $this->app->bind(Contracts\Config\Repository::class, Config\Repositories\ConfigRepository::class);
+        $this->app->bind(Contracts\Config\ValidatesConfig::class, Config\Validators\DefaultValidator::class);
     }
 
     /**

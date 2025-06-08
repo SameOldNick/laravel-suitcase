@@ -2,7 +2,7 @@
 
 namespace SameOldNick\LaraHostPack\Support;
 
-use SameOldNick\LaraHostPack\Contracts\PackConfig;
+use SameOldNick\LaraHostPack\Contracts\Config\PackConfig;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Event;
 

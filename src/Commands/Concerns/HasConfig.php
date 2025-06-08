@@ -2,7 +2,7 @@
 
 namespace SameOldNick\LaraHostPack\Commands\Concerns;
 
-use SameOldNick\LaraHostPack\Contracts\PackConfig;
+use SameOldNick\LaraHostPack\Contracts\Config\PackConfig;
 
 /**
  * @mixin \SameOldNick\LaraHostPack\Commands\PackForSharedHosting

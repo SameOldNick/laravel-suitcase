@@ -2,7 +2,7 @@
 
 namespace SameOldNick\LaraHostPack\Commands;
 
-use SameOldNick\LaraHostPack\Contracts\PackConfig;
+use SameOldNick\LaraHostPack\Contracts\Config\PackConfig;
 use SameOldNick\LaraHostPack\Contracts\EnvVariables;
 use SameOldNick\LaraHostPack\Support\EventDispatcher;
 use Illuminate\Console\Command;
