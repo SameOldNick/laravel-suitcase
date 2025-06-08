@@ -2,11 +2,11 @@
 
 namespace SameOldNick\LaraHostPack\Commands;
 
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 use SameOldNick\LaraHostPack\Contracts\Config\PackConfig;
 use SameOldNick\LaraHostPack\Contracts\EnvVariables;
 use SameOldNick\LaraHostPack\Support\EventDispatcher;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\File;
 
 class PackForSharedHosting extends Command
 {
@@ -33,7 +33,7 @@ class PackForSharedHosting extends Command
         $this->newLine();
 
         $this->info('Please ensure the config file is set up correctly.');
-        $this->info('You can find the config file at: ' . config_path('hostpack.php'));
+        $this->info('You can find the config file at: '.config_path('hostpack.php'));
         $this->newLine();
 
         if (! $this->setConfig($config)->validateConfig()) {
@@ -101,7 +101,7 @@ class PackForSharedHosting extends Command
         $eventDispatcher->dispatch('hostpack.zipped');
 
         $this->newLine();
-        $this->info('✅ Package created successfully: ' . $this->getConfig()->getZipPath());
+        $this->info('✅ Package created successfully: '.$this->getConfig()->getZipPath());
 
         $eventDispatcher->dispatch('hostpack.completed');
 

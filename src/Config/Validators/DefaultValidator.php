@@ -9,7 +9,7 @@ use SameOldNick\LaraHostPack\Contracts\Config\ValidatesConfig;
 class DefaultValidator implements ValidatesConfig
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function validate(PackConfigContract $packConfig): void
     {
@@ -26,7 +26,7 @@ class DefaultValidator implements ValidatesConfig
         }
 
         if (! File::exists($packConfig->getEnvFilePath())) {
-            throw new \InvalidArgumentException('The specified .env file does not exist: ' . $packConfig->getEnvFilePath());
+            throw new \InvalidArgumentException('The specified .env file does not exist: '.$packConfig->getEnvFilePath());
         }
 
         if (! File::exists($packConfig->getIndexStubPath())) {

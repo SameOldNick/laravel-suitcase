@@ -27,7 +27,7 @@ class LaraHostPackServiceProvider extends ServiceProvider
     protected function registerConfig()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/hostpack.php',
+            __DIR__.'/../config/hostpack.php',
             'hostpack'
         );
 
@@ -43,7 +43,7 @@ class LaraHostPackServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->publishes([
-            __DIR__ . '/../config/hostpack.php' => config_path('hostpack.php'),
+            __DIR__.'/../config/hostpack.php' => config_path('hostpack.php'),
         ], 'larahostpack-config');
 
         if ($this->app->runningInConsole()) {
@@ -53,7 +53,7 @@ class LaraHostPackServiceProvider extends ServiceProvider
         }
 
         if (config('hostpack.shared_hosting')) {
-            $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+            $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         }
     }
 }

@@ -47,7 +47,7 @@ trait HasConfig
         try {
             $this->config->validate();
         } catch (\InvalidArgumentException $e) {
-            $this->error('Configuration error: ' . $e->getMessage());
+            $this->error('Configuration error: '.$e->getMessage());
 
             return false;
         }

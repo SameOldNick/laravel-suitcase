@@ -2,9 +2,9 @@
 
 namespace SameOldNick\LaraHostPack\Support;
 
-use SameOldNick\LaraHostPack\Contracts\Config\PackConfig;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Event;
+use SameOldNick\LaraHostPack\Contracts\Config\PackConfig;
 
 class EventDispatcher
 {

@@ -2,9 +2,9 @@
 
 namespace SameOldNick\LaraHostPack\Commands\Concerns;
 
-use SameOldNick\LaraHostPack\Extensions\MySqlPHP;
 use Illuminate\Database\ConfigurationUrlParser;
 use Illuminate\Support\Arr;
+use SameOldNick\LaraHostPack\Extensions\MySqlPHP;
 use Spatie\DbDumper\Databases\MongoDb;
 use Spatie\DbDumper\Databases\PostgreSql;
 use Spatie\DbDumper\Databases\Sqlite;
@@ -32,7 +32,7 @@ trait DumpsDatabase
 
         $this->info('Creating database dump...');
 
-        $dumper->dumpToFile($outputPath . '/database.sql');
+        $dumper->dumpToFile($outputPath.'/database.sql');
 
         $this->info('Database dump created.');
     }

@@ -14,15 +14,15 @@ class ConfigRepository implements Repository
     ) {}
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getOption(string $key, $default = null): mixed
     {
-        return $this->configRepository->get(static::CONFIG_ROOT_KEY . "." . $key, $default);
+        return $this->configRepository->get(static::CONFIG_ROOT_KEY.'.'.$key, $default);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function all(): array
     {

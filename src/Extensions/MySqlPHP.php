@@ -50,7 +50,7 @@ class MySqlPHP extends MySql
 
         $options['dbname'] = $this->dbName;
 
-        return sprintf('mysql:%s', implode(';', Arr::map($options, fn($value, $key) => sprintf('%s=%s', $key, $value))));
+        return sprintf('mysql:%s', implode(';', Arr::map($options, fn ($value, $key) => sprintf('%s=%s', $key, $value))));
     }
 
     /**

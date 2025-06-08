@@ -16,7 +16,6 @@ trait PreparesFiles
      *
      * @param  string  $setupPath
      * @return void
-     * 
      */
     protected function prepareSetupRequirements(string $publicPath, array $requirements)
     {
@@ -25,7 +24,7 @@ trait PreparesFiles
          */
         $this->info('Preparing setup requirements...');
 
-        File::put("$publicPath/setup/requirements.php", "<?php\n\nreturn " . var_export($requirements, true) . ";\n");
+        File::put("$publicPath/setup/requirements.php", "<?php\n\nreturn ".var_export($requirements, true).";\n");
 
         $this->info('Setup requirements prepared successfully.');
     }
@@ -40,19 +39,19 @@ trait PreparesFiles
          */
         $this->info('Creating INSTALL.txt file...');
 
-        $path = $this->getConfig()->getExportPath() . '/INSTALL.txt';
+        $path = $this->getConfig()->getExportPath().'/INSTALL.txt';
 
         // TODO: Pull from stubs
         $steps = [
             'Perform the following steps to deploy your app:',
             '1. Upload the zip file to your shared hosting server.',
             '2. Unzip the file in the desired directory.',
-            '3. Move the contents of the "laravel" directory to your Laravel root directory: ' . $this->getConfig()->getRemoteLaravelPath(),
-            '4. Move the contents of the "public_html" directory to your public directory: ' . $this->getConfig()->getRemotePublicPath(),
+            '3. Move the contents of the "laravel" directory to your Laravel root directory: '.$this->getConfig()->getRemoteLaravelPath(),
+            '4. Move the contents of the "public_html" directory to your public directory: '.$this->getConfig()->getRemotePublicPath(),
             '5. Ensure the .env file is configured correctly for production.',
             '6. Set the correct permissions for the storage and bootstrap/cache directories.',
             '7. Add the following Cron job to your server:',
-            '   * * * * * php ' . $this->getConfig()->getRemoteLaravelPath() . '/artisan schedule:run >> /dev/null 2>&1',
+            '   * * * * * php '.$this->getConfig()->getRemoteLaravelPath().'/artisan schedule:run >> /dev/null 2>&1',
         ];
 
         File::put($path, implode("\n", $steps));
@@ -72,7 +71,7 @@ trait PreparesFiles
 
         $contents = File::get($constantsPath);
 
-        $contents = Str::replace('{{ laravelRootDir }}', "'" . addslashes($this->getConfig()->getRemoteLaravelPath()) . "'", $contents);
+        $contents = Str::replace('{{ laravelRootDir }}', "'".addslashes($this->getConfig()->getRemoteLaravelPath())."'", $contents);
 
         File::put($constantsPath, $contents);
 
@@ -140,7 +139,7 @@ trait PreparesFiles
         if (preg_match("/^$key=/m", $contents)) {
             $contents = preg_replace("/^$key=.*/m", "$key=$value", $contents);
         } else {
-            $contents .= PHP_EOL . "$key=$value" . PHP_EOL;
+            $contents .= PHP_EOL."$key=$value".PHP_EOL;
         }
 
         return $contents;

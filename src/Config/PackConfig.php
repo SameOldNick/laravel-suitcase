@@ -2,11 +2,8 @@
 
 namespace SameOldNick\LaraHostPack\Config;
 
-use SameOldNick\LaraHostPack\Contracts\Config\PackConfig as PackConfigContract;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\File;
 use SameOldNick\LaraHostPack\Contracts\Config\Options;
-use SameOldNick\LaraHostPack\Contracts\Config\Repository;
+use SameOldNick\LaraHostPack\Contracts\Config\PackConfig as PackConfigContract;
 use SameOldNick\LaraHostPack\Contracts\Config\ValidatesConfig;
 
 class PackConfig implements PackConfigContract
@@ -162,8 +159,6 @@ class PackConfig implements PackConfigContract
 
     /**
      * Gets the options instance.
-     *
-     * @return Options
      */
     protected function getOptions(): Options
     {
@@ -172,8 +167,6 @@ class PackConfig implements PackConfigContract
 
     /**
      * Gets the validator instance.
-     *
-     * @return ValidatesConfig
      */
     protected function getValidator(): ValidatesConfig
     {

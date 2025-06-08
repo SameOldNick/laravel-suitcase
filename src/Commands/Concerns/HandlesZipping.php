@@ -25,7 +25,7 @@ trait HandlesZipping
         $zip = new ZipArchive;
 
         if (! $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE)) {
-            $this->error('Failed to create zip file: ' . $zipPath);
+            $this->error('Failed to create zip file: '.$zipPath);
 
             return;
         }
@@ -49,7 +49,7 @@ trait HandlesZipping
                 $relativePath = substr($filePath, strlen($exportPath) + 1);
                 $relativePath = str_replace('\\', '/', $relativePath); // Normalize for zip
 
-                $bar->setMessage('Zipping: ' . $relativePath);
+                $bar->setMessage('Zipping: '.$relativePath);
 
                 $zip->addFile($filePath, $relativePath);
             }

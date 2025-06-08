@@ -8,14 +8,16 @@ use SameOldNick\LaraHostPack\Contracts\Config\Repository;
 class Options implements OptionsContract
 {
     public const DEFAULT_REMOTE_LARAVEL = '/home/username/laravel';
+
     public const DEFAULT_REMOTE_PUBLIC = '/home/username/public_html';
-    public const INDEX_STUB = __DIR__ . '/../../stubs/index.php.stub';
-    public const CONSTANTS_STUB = __DIR__ . '/../../stubs/constants.php.stub';
+
+    public const INDEX_STUB = __DIR__.'/../../stubs/index.php.stub';
+
+    public const CONSTANTS_STUB = __DIR__.'/../../stubs/constants.php.stub';
 
     public function __construct(
         protected readonly Repository $repository,
     ) {}
-
 
     // === Export & Deployment Paths ===
 
@@ -64,7 +66,7 @@ class Options implements OptionsContract
      */
     public function getPublicPath(): string
     {
-        return $this->getExportPath() . '/public_html';
+        return $this->getExportPath().'/public_html';
     }
 
     /**
@@ -72,7 +74,7 @@ class Options implements OptionsContract
      */
     public function getLaravelPath(): string
     {
-        return $this->getExportPath() . '/laravel';
+        return $this->getExportPath().'/laravel';
     }
 
     /**

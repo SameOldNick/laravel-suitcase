@@ -23,7 +23,7 @@ trait HandlesFileExport
         $basePath = base_path();
 
         // Public directory
-        $this->exportPublicDirectory($basePath . '/public');
+        $this->exportPublicDirectory($basePath.'/public');
 
         // Laravel core
         $this->exportLaravelDirectory($basePath);
@@ -197,7 +197,7 @@ trait HandlesFileExport
         $this->recurseDirectory($source, function ($item, $itemPath) use ($source, $destination, $includes, $excludes, $bar) {
             $bar->advance();
 
-            $sourchPathRelative = sprintf('%s%s', str_replace($source . '/', '', $itemPath), File::isDirectory($itemPath) ? '/' : '');
+            $sourchPathRelative = sprintf('%s%s', str_replace($source.'/', '', $itemPath), File::isDirectory($itemPath) ? '/' : '');
 
             // Check if the item is included or excluded
             $included = empty($includes) || $this->filesInList($includes, $sourchPathRelative);
@@ -215,7 +215,7 @@ trait HandlesFileExport
                 return;
             }
 
-            $destinationPath = $this->normalizePath($destination . '/' . $sourchPathRelative);
+            $destinationPath = $this->normalizePath($destination.'/'.$sourchPathRelative);
 
             if (is_dir($itemPath)) {
                 $bar->setMessage("Creating directory: {$destinationPath}");
