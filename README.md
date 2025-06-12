@@ -44,7 +44,7 @@ Shared hosting does not support some features of Laravel, such as:
 - Broadcasting and WebSockets
 - Artisan commands
 
-If your Laravel app requires these features, you will need a VPS or dedicated server and knowledge of Linux.
+If your Laravel app requires these features, you will need a [VPS](https://www.google.com/search?q=virtual+private+server) or [dedicated server](https://www.google.com/search?q=dedicated+server).
 
 ## Requirements
 
@@ -119,6 +119,13 @@ MAIL_MAILER=sendmail
 ```
 
 #### Additional Configuration
+
+The `SHARED_HOSTING` variable needs to be set so the Laravel app can run properly in a shared hosting environment:
+
+```env
+SHARED_HOSTING=true
+```
+
 Ensure that the correct environment variables are set. You can reference the `.env` file used for local development to see what variables should be set.
 
 ### 5. Prepare Your App for Production
