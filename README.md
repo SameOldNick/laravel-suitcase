@@ -53,9 +53,9 @@ If your Laravel app requires these features, you will need a [VPS](https://www.g
 
 **Required PHP extensions:**
 
-- pdo
-- pdo_mysql (or pdo_sqlite, pdo_pgsql, etc. for your DB)
-- zip
+- [pdo](https://www.php.net/manual/en/book.pdo.php)
+- [pdo_mysql (or pdo_sqlite, pdo_pgsql, etc. for your DB)](https://www.php.net/manual/en/pdo.drivers.php)
+- [zip](https://www.php.net/manual/en/book.zip.php)
 
 ## Detailed Setup
 
