@@ -69,6 +69,9 @@
   "scripts": {
     "analyse": "vendor/bin/phpstan analyse",
     "baseline": "vendor/bin/phpstan analyse --generate-baseline",
-    "test": "vendor/bin/phpunit"
+    "test": "vendor/bin/phpunit",
+    "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+    "build": "@php vendor/bin/testbench workbench:build --ansi",
+    "artisan": "@php vendor/bin/testbench --ansi"
   }
 }
