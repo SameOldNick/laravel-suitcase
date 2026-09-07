@@ -1,12 +1,12 @@
 <?php
 
-namespace SameOldNick\LaraHostPack\Commands\Concerns;
+namespace SameOldNick\LaravelSuitcase\Commands\Concerns;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 /**
- * @mixin \SameOldNick\LaraHostPack\Commands\PackForSharedHosting
+ * @mixin \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting
  */
 trait HandlesFileExport
 {
@@ -16,7 +16,7 @@ trait HandlesFileExport
     protected function exportFiles(): void
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
         $this->info('Exporting files...');
 
@@ -43,7 +43,7 @@ trait HandlesFileExport
     protected function exportPublicDirectory(string $source)
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
         $this->info('Exporting public directory...');
 
@@ -61,7 +61,7 @@ trait HandlesFileExport
     protected function exportLaravelDirectory(string $source)
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
         $this->info('Exporting Laravel core directory...');
 
@@ -85,7 +85,7 @@ trait HandlesFileExport
     protected function exportAdditionalFiles()
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
         $publicPath = $this->getConfig()->getPublicPath();
         $laravelPath = $this->getConfig()->getLaravelPath();
@@ -135,7 +135,7 @@ trait HandlesFileExport
     protected function recurseDirectory(string $directory, callable $callback, bool $ignoreLinks = true): void
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
         $source = $this->normalizePath(realpath($directory));
         $items = scandir($source);
@@ -180,7 +180,7 @@ trait HandlesFileExport
     protected function copyDirectory(string $source, string $destination, array $includes, array $excludes): void
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
         $source = $this->normalizePath(realpath($source));
         $destination = $this->normalizePath($destination);

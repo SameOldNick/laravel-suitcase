@@ -1,10 +1,10 @@
 <?php
 
-namespace SameOldNick\LaraHostPack\Config\Validators;
+namespace SameOldNick\LaravelSuitcase\Config\Validators;
 
 use Illuminate\Support\Facades\File;
-use SameOldNick\LaraHostPack\Contracts\Config\PackConfig as PackConfigContract;
-use SameOldNick\LaraHostPack\Contracts\Config\ValidatesConfig;
+use SameOldNick\LaravelSuitcase\Contracts\Config\PackConfig as PackConfigContract;
+use SameOldNick\LaravelSuitcase\Contracts\Config\ValidatesConfig;
 
 class DefaultValidator implements ValidatesConfig
 {

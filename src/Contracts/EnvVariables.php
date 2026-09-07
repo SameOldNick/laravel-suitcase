@@ -1,6 +1,6 @@
 <?php
 
-namespace SameOldNick\LaraHostPack\Contracts;
+namespace SameOldNick\LaravelSuitcase\Contracts;
 
 interface EnvVariables
 {

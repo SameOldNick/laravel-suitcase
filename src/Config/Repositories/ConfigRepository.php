@@ -1,13 +1,13 @@
 <?php
 
-namespace SameOldNick\LaraHostPack\Config\Repositories;
+namespace SameOldNick\LaravelSuitcase\Config\Repositories;
 
 use Illuminate\Contracts\Config\Repository as LaravelConfigRepository;
-use SameOldNick\LaraHostPack\Contracts\Config\Repository;
+use SameOldNick\LaravelSuitcase\Contracts\Config\Repository;
 
 class ConfigRepository implements Repository
 {
-    const CONFIG_ROOT_KEY = 'larahostpack';
+    const CONFIG_ROOT_KEY = 'suitcase';
 
     public function __construct(
         protected readonly LaravelConfigRepository $configRepository,
@@ -38,7 +38,7 @@ class ConfigRepository implements Repository
     }
 
     /**
-     * Get the root key for the LaraHostPack configuration.
+     * Get the root key for the Laravel Suitcase configuration.
      */
     public static function getConfigRootKey(): string
     {

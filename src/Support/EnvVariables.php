@@ -1,9 +1,9 @@
 <?php
 
-namespace SameOldNick\LaraHostPack\Support;
+namespace SameOldNick\LaravelSuitcase\Support;
 
 use Illuminate\Encryption\Encrypter;
-use SameOldNick\LaraHostPack\Contracts\EnvVariables as EnvVariablesContract;
+use SameOldNick\LaravelSuitcase\Contracts\EnvVariables as EnvVariablesContract;
 
 class EnvVariables implements EnvVariablesContract
 {

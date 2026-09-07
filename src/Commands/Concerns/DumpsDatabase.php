@@ -1,17 +1,17 @@
 <?php
 
-namespace SameOldNick\LaraHostPack\Commands\Concerns;
+namespace SameOldNick\LaravelSuitcase\Commands\Concerns;
 
 use Illuminate\Database\ConfigurationUrlParser;
 use Illuminate\Support\Arr;
-use SameOldNick\LaraHostPack\Extensions\MySqlPHP;
+use SameOldNick\LaravelSuitcase\Extensions\MySqlPHP;
 use Spatie\DbDumper\Databases\MongoDb;
 use Spatie\DbDumper\Databases\PostgreSql;
 use Spatie\DbDumper\Databases\Sqlite;
 use Spatie\DbDumper\DbDumper;
 
 /**
- * @mixin \SameOldNick\LaraHostPack\Commands\PackForSharedHosting
+ * @mixin \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting
  */
 trait DumpsDatabase
 {
@@ -21,7 +21,7 @@ trait DumpsDatabase
     protected function dumpDatabase(): void
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
         $outputPath = $this->getConfig()->getExportPath();
         $connectionName = $this->getConfig()->getDbConnection();
@@ -43,7 +43,7 @@ trait DumpsDatabase
     protected function getDbConfig(string $connectionName): array
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
         $config = config("database.connections.{$connectionName}");
 
@@ -56,7 +56,7 @@ trait DumpsDatabase
     protected function createDbDumper(array $dbConfig, array $extraOptions): DbDumper
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
 
         // TODO: Skip CREATE DATABASE

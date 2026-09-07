@@ -1,8 +1,8 @@
 <?php
 
-namespace SameOldNick\LaraHostPack\Contracts\Config;
+namespace SameOldNick\LaravelSuitcase\Contracts\Config;
 
-use SameOldNick\LaraHostPack\Contracts\Config\PackConfig as PackConfigContract;
+use SameOldNick\LaravelSuitcase\Contracts\Config\PackConfig as PackConfigContract;
 
 interface ValidatesConfig
 {

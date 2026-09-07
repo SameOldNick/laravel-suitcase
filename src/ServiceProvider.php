@@ -1,10 +1,10 @@
 <?php
 
-namespace SameOldNick\LaraHostPack;
+namespace SameOldNick\LaravelSuitcase;
 
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
-class LaraHostPackServiceProvider extends ServiceProvider
+class ServiceProvider extends BaseServiceProvider
 {
     /**
      * Register any application services.
@@ -43,12 +43,12 @@ class LaraHostPackServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->publishes([
-            __DIR__.'/../config/larahostpack.php' => config_path('larahostpack.php'),
-        ], 'larahostpack-config');
+            __DIR__.'/../config/suitcase.php' => config_path('suitcase.php'),
+        ], 'suitcase-config');
 
         $this->publishes([
             __DIR__.'/../stubs/env.stub' => base_path('.env.shared'),
-        ], 'larahostpack-env');
+        ], 'suitcase-env');
 
         if ($this->app->runningInConsole()) {
             $this->commands([
@@ -56,7 +56,7 @@ class LaraHostPackServiceProvider extends ServiceProvider
             ]);
         }
 
-        if (config('hostpack.shared_hosting')) {
+        if (config('suitcase.shared_hosting')) {
             $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         }
     }

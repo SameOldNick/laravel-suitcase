@@ -1,6 +1,6 @@
 <?php
 
-namespace SameOldNick\LaraHostPack\Extensions;
+namespace SameOldNick\LaravelSuitcase\Extensions;
 
 use Ifsnop\Mysqldump\Mysqldump;
 use Illuminate\Support\Arr;

@@ -1,10 +1,10 @@
 <?php
 
-namespace SameOldNick\LaraHostPack\Support;
+namespace SameOldNick\LaravelSuitcase\Support;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Event;
-use SameOldNick\LaraHostPack\Contracts\Config\PackConfig;
+use SameOldNick\LaravelSuitcase\Contracts\Config\PackConfig;
 
 class EventDispatcher
 {

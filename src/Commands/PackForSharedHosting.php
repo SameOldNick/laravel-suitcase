@@ -1,13 +1,13 @@
 <?php
 
-namespace SameOldNick\LaraHostPack\Commands;
+namespace SameOldNick\LaravelSuitcase\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use SameOldNick\LaraHostPack\Config\Repositories\ConfigRepository;
-use SameOldNick\LaraHostPack\Contracts\Config\PackConfig;
-use SameOldNick\LaraHostPack\Contracts\EnvVariables;
-use SameOldNick\LaraHostPack\Support\EventDispatcher;
+use SameOldNick\LaravelSuitcase\Config\Repositories\ConfigRepository;
+use SameOldNick\LaravelSuitcase\Contracts\Config\PackConfig;
+use SameOldNick\LaravelSuitcase\Contracts\EnvVariables;
+use SameOldNick\LaravelSuitcase\Support\EventDispatcher;
 
 class PackForSharedHosting extends Command
 {
@@ -18,7 +18,7 @@ class PackForSharedHosting extends Command
     use Concerns\PreparesDirectories;
     use Concerns\PreparesFiles;
 
-    protected $signature = 'larahostpack
+    protected $signature = 'suitcase:pack
                             {--skip-vendor : Skip vendor directory}
                             {--skip-env : Skip .env file}';
 
@@ -28,7 +28,7 @@ class PackForSharedHosting extends Command
     {
         $eventDispatcher = new EventDispatcher($this, $config);
 
-        $this->info('🔧 LaraHostPack');
+        $this->info('🔧 Laravel Suitcase');
         $this->info('Welcome to the Laravel Shared Hosting Packer!');
         $this->info('This command will help you prepare your Laravel application for deployment on shared hosting.');
         $this->newLine();
@@ -61,7 +61,7 @@ class PackForSharedHosting extends Command
         }
 
         $this->info('Preparing app for shared hosting...');
-        $eventDispatcher->dispatch('larahostpack.preparing');
+        $eventDispatcher->dispatch('suitcase.preparing');
 
         // Create the ZIP file if it doesn't exist
         if (File::put($this->getConfig()->getZipPath(), '') === false) {
@@ -71,15 +71,15 @@ class PackForSharedHosting extends Command
         }
 
         $this->prepareExportDirectories();
-        $eventDispatcher->dispatch('larahostpack.directories.prepared');
+        $eventDispatcher->dispatch('suitcase.directories.prepared');
 
         if ($config->getDbDumpEnabled()) {
             $this->dumpDatabase();
-            $eventDispatcher->dispatch('larahostpack.database.dumped');
+            $eventDispatcher->dispatch('suitcase.database.dumped');
         }
 
         $this->exportFiles();
-        $eventDispatcher->dispatch('larahostpack.files.exported');
+        $eventDispatcher->dispatch('suitcase.files.exported');
 
         // Update index.php to point to the correct Laravel directory
         $this->updateConstantsFile("{$config->getPublicPath()}/constants.php");
@@ -89,22 +89,22 @@ class PackForSharedHosting extends Command
             $destinationEnvFilePath = "{$config->getLaravelPath()}/.env";
             $this->updateEnvFile($destinationEnvFilePath, $envVariables->getCustomizedVariables());
 
-            $eventDispatcher->dispatch('larahostpack.env.updated', [
+            $eventDispatcher->dispatch('suitcase.env.updated', [
                 'envFilePath' => $destinationEnvFilePath,
                 'envVariables' => $envVariables->getCustomizedVariables(),
             ]);
         }
 
         $this->createInstallFile();
-        $eventDispatcher->dispatch('larahostpack.install.file.created');
+        $eventDispatcher->dispatch('suitcase.install.file.created');
 
         $this->zipPackage();
-        $eventDispatcher->dispatch('larahostpack.zipped');
+        $eventDispatcher->dispatch('suitcase.zipped');
 
         $this->newLine();
         $this->info('✅ Package created successfully: '.$this->getConfig()->getZipPath());
 
-        $eventDispatcher->dispatch('larahostpack.completed');
+        $eventDispatcher->dispatch('suitcase.completed');
 
         $this->info('To deploy your app, follow the instructions in the INSTALL.txt file.');
 

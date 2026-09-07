@@ -1,11 +1,11 @@
 <?php
 
-namespace SameOldNick\LaraHostPack\Commands\Concerns;
+namespace SameOldNick\LaravelSuitcase\Commands\Concerns;
 
-use SameOldNick\LaraHostPack\Contracts\Config\PackConfig;
+use SameOldNick\LaravelSuitcase\Contracts\Config\PackConfig;
 
 /**
- * @mixin \SameOldNick\LaraHostPack\Commands\PackForSharedHosting
+ * @mixin \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting
  */
 trait HasConfig
 {
@@ -17,7 +17,7 @@ trait HasConfig
     protected function setConfig(PackConfig $config): static
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
         $this->config = $config;
 
@@ -30,7 +30,7 @@ trait HasConfig
     protected function getConfig(): PackConfig
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
 
         return $this->config;
@@ -42,7 +42,7 @@ trait HasConfig
     protected function validateConfig(): bool
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
         try {
             $this->config->validate();

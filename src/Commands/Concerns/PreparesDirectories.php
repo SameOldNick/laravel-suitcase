@@ -1,11 +1,11 @@
 <?php
 
-namespace SameOldNick\LaraHostPack\Commands\Concerns;
+namespace SameOldNick\LaravelSuitcase\Commands\Concerns;
 
 use Illuminate\Support\Facades\File;
 
 /**
- * @mixin \SameOldNick\LaraHostPack\Commands\PackForSharedHosting
+ * @mixin \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting
  */
 trait PreparesDirectories
 {
@@ -15,7 +15,7 @@ trait PreparesDirectories
     protected function prepareExportDirectories(): void
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
         $this->info('Preparing export directories...');
 
@@ -34,7 +34,7 @@ trait PreparesDirectories
     protected function prepareExportDirectory(string $path): void
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
         $this->info("Preparing export directory: $path...");
 
@@ -52,7 +52,7 @@ trait PreparesDirectories
     protected function prepareLaravelDirectory(string $path): void
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
         $this->info("Preparing Laravel directory: $path...");
 
@@ -94,7 +94,7 @@ trait PreparesDirectories
     protected function preparePublicDirectory(string $path): void
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
         $this->info("Preparing public directory: $path...");
 

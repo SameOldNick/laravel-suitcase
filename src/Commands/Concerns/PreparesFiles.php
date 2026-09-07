@@ -1,12 +1,12 @@
 <?php
 
-namespace SameOldNick\LaraHostPack\Commands\Concerns;
+namespace SameOldNick\LaravelSuitcase\Commands\Concerns;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 /**
- * @mixin \SameOldNick\LaraHostPack\Commands\PackForSharedHosting
+ * @mixin \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting
  */
 trait PreparesFiles
 {
@@ -20,7 +20,7 @@ trait PreparesFiles
     protected function prepareSetupRequirements(string $publicPath, array $requirements)
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
         $this->info('Preparing setup requirements...');
 
@@ -35,7 +35,7 @@ trait PreparesFiles
     protected function createInstallFile(): void
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
         $this->info('Creating INSTALL.txt file...');
 
@@ -65,7 +65,7 @@ trait PreparesFiles
     protected function updateConstantsFile(string $constantsPath): void
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
         $this->info('Updating constants.php file...');
 
@@ -84,7 +84,7 @@ trait PreparesFiles
     protected function updateEnvFile(string $envPath, array $envVariables): void
     {
         /**
-         * @var \SameOldNick\LaraHostPack\Commands\PackForSharedHosting $this
+         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
          */
         $this->info('Updating .env file...');
 

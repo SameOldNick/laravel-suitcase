@@ -1,6 +1,6 @@
 <?php
 
-namespace SameOldNick\LaraHostPack\Contracts\Config;
+namespace SameOldNick\LaravelSuitcase\Contracts\Config;
 
 interface PackConfig extends Options
 {

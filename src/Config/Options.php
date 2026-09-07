@@ -1,9 +1,9 @@
 <?php
 
-namespace SameOldNick\LaraHostPack\Config;
+namespace SameOldNick\LaravelSuitcase\Config;
 
-use SameOldNick\LaraHostPack\Contracts\Config\Options as OptionsContract;
-use SameOldNick\LaraHostPack\Contracts\Config\Repository;
+use SameOldNick\LaravelSuitcase\Contracts\Config\Options as OptionsContract;
+use SameOldNick\LaravelSuitcase\Contracts\Config\Repository;
 
 class Options implements OptionsContract
 {

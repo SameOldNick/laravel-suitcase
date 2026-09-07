@@ -1,10 +1,10 @@
 <?php
 
-namespace SameOldNick\LaraHostPack\Config;
+namespace SameOldNick\LaravelSuitcase\Config;
 
-use SameOldNick\LaraHostPack\Contracts\Config\Options;
-use SameOldNick\LaraHostPack\Contracts\Config\PackConfig as PackConfigContract;
-use SameOldNick\LaraHostPack\Contracts\Config\ValidatesConfig;
+use SameOldNick\LaravelSuitcase\Contracts\Config\Options;
+use SameOldNick\LaravelSuitcase\Contracts\Config\PackConfig as PackConfigContract;
+use SameOldNick\LaravelSuitcase\Contracts\Config\ValidatesConfig;
 
 class PackConfig implements PackConfigContract
 {
