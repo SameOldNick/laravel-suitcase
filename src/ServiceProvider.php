@@ -27,8 +27,8 @@ class ServiceProvider extends BaseServiceProvider
     protected function registerConfig()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../config/larahostpack.php',
-            'larahostpack'
+            __DIR__.'/../config/suitcase.php',
+            'suitcase'
         );
 
         $this->app->bind(Contracts\Config\PackConfig::class, Config\PackConfig::class);
