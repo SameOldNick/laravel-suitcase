@@ -16,17 +16,18 @@ Laravel Suitcase helps you package your Laravel app for deployment on shared hos
    php artisan vendor:publish --tag=suitcase-config
    php artisan vendor:publish --tag=suitcase-env
    ```
-3. Generate an application key for shared hosting:
+3. Update `config/suitcase.php` with your shared hosting paths (at minimum `remote.laravel_path` and `remote.public_path`) and any other customizations.
+4. Generate an application key for shared hosting:
    ```bash
    php artisan --env=shared key:generate
    ```
-4. Edit `.env.shared` with your database and mail settings.
-5. Prepare your app for production (update dependencies, build assets, run migrations).
-6. Package your app:
+5. Edit `.env.shared` with your database and mail settings.
+6. Prepare your app for production (update dependencies, build assets, run migrations).
+7. Package your app:
    ```bash
    php artisan suitcase:pack
    ```
-7. Deploy the generated ZIP to your shared hosting and follow the `INSTALL.txt` instructions inside.
+8. Deploy the generated ZIP to your shared hosting and follow the `INSTALL.txt` instructions inside.
 
 ## Table of Contents
 
@@ -80,7 +81,11 @@ php artisan vendor:publish --tag=suitcase-config
 php artisan vendor:publish --tag=suitcase-env
 ```
 
-### 3. Generate the Application Key
+### 3. Update the Config File
+
+Open `config/suitcase.php` and update it to match your shared hosting setup. At a minimum, set the `remote.laravel_path` and `remote.public_path` options to the paths on your shared hosting server. You can also customize the `export_dir`, `zip_name`, and `env_file` options as needed.
+
+### 4. Generate the Application Key
 
 Generate a unique application key for your shared hosting environment. This is important for security—do not reuse keys across installations.
 
@@ -90,7 +95,7 @@ php artisan --env=shared key:generate
 
 **Important:** Use a different key for each installation of your Laravel app. Do not use the same key for every installation.
 
-### 4. Edit the Environment File
+### 5. Edit the Environment File
 
 Edit the `.env.shared` file to configure your environment variables for the shared hosting environment.
 
@@ -138,7 +143,7 @@ SHARED_HOSTING=true
 
 Ensure that the correct environment variables are set. You can reference the `.env` file used for local development to see what variables should be set.
 
-### 5. Prepare Your App for Production
+### 6. Prepare Your App for Production
 
 Before packaging your Laravel app, make sure it is production-ready. Laravel Suitcase does not run database migrations or build frontend assets; it copies what is available. Be sure to:
 
@@ -147,7 +152,7 @@ Before packaging your Laravel app, make sure it is production-ready. Laravel Sui
 - Build frontend assets: `npm run build`
 - Run database migrations: `php artisan migrate`
 
-### 6. Package the Laravel App
+### 7. Package the Laravel App
 
 When you're ready, package the Laravel app by running:
 
