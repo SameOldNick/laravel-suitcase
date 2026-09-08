@@ -40,6 +40,7 @@ Laravel Suitcase helps you package your Laravel app for deployment on shared hos
     - [Additional Configuration](#additional-configuration)
   - [Preparation](#preparation)
   - [Package the Laravel App](#package-the-laravel-app)
+- [Troubleshooting](#troubleshooting)
 
 ## Limitations
 
@@ -84,6 +85,8 @@ php artisan vendor:publish --tag=suitcase-env
 ### 3. Update the Config File
 
 Open `config/suitcase.php` and update it to match your shared hosting setup. At a minimum, set the `remote.laravel_path` and `remote.public_path` options to the paths on your shared hosting server. You can also customize the `export_dir`, `zip_name`, and `env_file` options as needed.
+
+> **Note:** On DirectAdmin and cPanel, server paths usually start with `/home/username` (for example, `/home/username/laravel` and `/home/username/public_html`).
 
 ### 4. Generate the Application Key
 
@@ -161,3 +164,19 @@ php artisan suitcase:pack
 ```
 
 Packaging may take several minutes. A ZIP file will be created in the root folder of your Laravel app. Follow the instructions in the `INSTALL.txt` file (inside the ZIP) to deploy to shared hosting.
+
+## Troubleshooting
+
+### Server Errors
+
+If you see a **"500 | Server Error"** when trying to access your website on shared hosting, check the Laravel error log:
+
+```
+storage/logs/laravel.log
+```
+
+This file contains the actual exception and stack trace, which will tell you exactly what went wrong.
+
+You can also check the PHP error log in your hosting control panel:
+
+- **DirectAdmin** and **cPanel** both provide an error log viewer (usually under _Errors_ or _Error Logs_) that shows PHP errors for your account.
