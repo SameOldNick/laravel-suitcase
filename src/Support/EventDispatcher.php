@@ -10,7 +10,7 @@ class EventDispatcher
 {
     public function __construct(
         protected readonly Command $command,
-        protected readonly PackConfig $config
+        protected readonly PackConfig $config,
     ) {}
 
     public function dispatch(string $event, array $payload = []): void
