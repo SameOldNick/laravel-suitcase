@@ -1,5 +1,8 @@
 # Laravel Suitcase
 
+[![codecov](https://codecov.io/gh/SameOldNick/laravel-suitcase/graph/badge.svg?token=SEKDQOQAHW)](https://codecov.io/gh/SameOldNick/laravel-suitcase)
+[![Tests](https://github.com/SameOldNick/laravel-suitcase/actions/workflows/tests.yml/badge.svg)](https://github.com/SameOldNick/laravel-suitcase/actions/workflows/tests.yml)
+
 Laravel Suitcase helps you package your Laravel app for deployment on shared hosting, handling environment setup, file structure, and more.
 
 ## Quick Start
