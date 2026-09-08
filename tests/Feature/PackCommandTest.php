@@ -153,6 +153,12 @@ class PackCommandTest extends TestCase
         $this->assertStringContainsString('/home/username/laravel', $install);
         $this->assertStringContainsString('/home/username/public_html', $install);
         $this->assertStringContainsString('schedule:run', $install);
+
+        // Database deployment guidance is included in the install steps.
+        $this->assertStringContainsString('Create a MySQL database', $install);
+        $this->assertStringContainsString('phpMyAdmin', $install);
+        $this->assertStringContainsString('DB_USERNAME', $install);
+        $this->assertStringContainsString('DB_DATABASE', $install);
     }
 
     public function test_skip_env_option_omits_the_env_file(): void

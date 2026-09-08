@@ -2,15 +2,18 @@
 
 namespace SameOldNick\LaravelSuitcase\Tests;
 
+use Illuminate\Console\OutputStyle;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
+use SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting;
+use SameOldNick\LaravelSuitcase\Contracts\Config\PackConfig;
 use SameOldNick\LaravelSuitcase\Tests\Support\TestServiceProvider;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 abstract class TestCase extends OrchestraTestCase
 {
     /**
      * The temporary "Laravel app" base path used by the packer.
-     *
-     * @var string|null
      */
     protected static ?string $temporaryBasePath = null;
 
@@ -189,5 +192,85 @@ abstract class TestCase extends OrchestraTestCase
         }
 
         @rmdir($directory);
+    }
+
+    // ------------------------------------------------------------------
+    // Helpers for unit-testing the protected components of `suitcase:pack`
+    // ------------------------------------------------------------------
+
+    /**
+     * Captured command output buffers, keyed by command instance.
+     *
+     * @var \WeakMap<PackForSharedHosting, BufferedOutput>
+     */
+    private static \WeakMap $commandBuffers;
+
+    /**
+     * Resolve a PackConfig from the container, applying any config overrides.
+     *
+     * @param  array<string, mixed>  $configOverrides  Dot-notation config overrides, e.g. ['db_dump.enabled' => false]
+     */
+    protected function packConfig(array $configOverrides = []): PackConfig
+    {
+        foreach ($configOverrides as $key => $value) {
+            config(["suitcase.$key" => $value]);
+        }
+
+        return $this->app->make(PackConfig::class);
+    }
+
+    /**
+     * Build a real PackForSharedHosting command wired with input/output so its
+     * protected component methods can be invoked directly.
+     *
+     * @param  array<string, mixed>  $options  Console options, e.g. ['--skip-env' => true]
+     */
+    protected function makePackCommand(PackConfig $config, array $options = []): PackForSharedHosting
+    {
+        $command = new PackForSharedHosting;
+
+        self::$commandBuffers ??= new \WeakMap;
+
+        $input = new ArrayInput($options);
+        $input->bind($command->getDefinition());
+        $buffer = new BufferedOutput;
+        $output = new OutputStyle($input, $buffer);
+
+        $this->setReflected($command, 'laravel', $this->app);
+        $this->setReflected($command, 'input', $input);
+        $this->setReflected($command, 'output', $output);
+        self::$commandBuffers[$command] = $buffer;
+
+        $this->invoke($command, 'setConfig', [$config]);
+
+        return $command;
+    }
+
+    /**
+     * Invoke a method (any visibility) on an object via reflection.
+     *
+     * @param  array<int, mixed>  $parameters
+     */
+    protected function invoke(object $object, string $method, array $parameters = []): mixed
+    {
+        return (new \ReflectionMethod($object, $method))->invokeArgs($object, $parameters);
+    }
+
+    /**
+     * Read the captured output of a command built with makePackCommand().
+     */
+    protected function commandOutput(PackForSharedHosting $command): string
+    {
+        $buffer = self::$commandBuffers[$command] ?? null;
+
+        return $buffer?->fetch() ?? '';
+    }
+
+    /**
+     * Set a protected/private property via reflection.
+     */
+    protected function setReflected(object $object, string $property, mixed $value): void
+    {
+        (new \ReflectionProperty($object, $property))->setValue($object, $value);
     }
 }
