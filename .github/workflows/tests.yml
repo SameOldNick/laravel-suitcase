@@ -11,43 +11,95 @@ permissions:
 
 jobs:
   tests:
+    name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }}
     runs-on: ubuntu-latest
 
+    strategy:
+      # Never cancel other combos when one fails - we want to see every result.
+      fail-fast: false
+      matrix:
+        php: ["8.2", "8.3", "8.4"]
+        laravel: ["11", "12", "13"]
+        exclude:
+          # Laravel 13 requires PHP ^8.3.
+          - php: "8.2"
+            laravel: "13"
+        include:
+          # Compute coverage on one representative (newest) combo only.
+          - php: "8.4"
+            laravel: "13"
+            coverage: true
+
     steps:
+      - uses: actions/checkout@v6
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.4
+          php-version: ${{ matrix.php }}
           tools: composer:v2
-          coverage: xdebug
-
-      - uses: actions/checkout@v6
+          coverage: ${{ matrix.coverage == true && 'xdebug' || 'none' }}
 
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |
           echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
       - name: Cache Composer dependencies
         uses: actions/cache@v5
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          # composer.lock is intentionally not committed, so cache on composer.json
+          # plus the PHP/Laravel combination.
+          key: ${{ runner.os }}-php${{ matrix.php }}-laravel${{ matrix.laravel }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: |
             ${{ runner.os }}-composer-
 
-      - name: Install Dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-
-      - name: Build Workbench
-        run: composer build
-
-      - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
+      # No composer.lock is committed, so every job does a fresh `composer update`.
+      # Pin the Laravel major by rewriting the (ephemeral) constraints in
+      # composer.json for this job, matching illuminate to its Testbench major:
+      #   Laravel 10 -> illuminate ^10.2 + testbench ^8
+      #   Laravel 11 -> illuminate ^11   + testbench ^9
+      #   Laravel 12 -> illuminate ^12   + testbench ^10
+      #   Laravel 13 -> illuminate ^13   + testbench ^11
+      # (Laravel 10 is intentionally not in the matrix: it is EOL and cannot be
+      # resolved - Testbench 8 pins laravel/framework <10.1 while this package
+      # requires illuminate ^10.2, an unresolvable combination.)
+      - name: Install dependencies (Laravel ${{ matrix.laravel }})
         env:
-          XDEBUG_MODE: coverage
-        run: composer test -- --coverage-clover coverage.xml --log-junit junit.xml
-        continue-on-error: true
+          # Don't let Composer's security-policy screening block older (EOL)
+          # framework versions that the matrix is explicitly testing.
+          COMPOSER_NO_BLOCKING: 1
+        run: |
+          case "${{ matrix.laravel }}" in
+            10) illuminate="^10.2"; testbench="^8.0" ;;
+            11) illuminate="^11.0"; testbench="^9.0" ;;
+            12) illuminate="^12.0"; testbench="^10.0" ;;
+            13) illuminate="^13.0"; testbench="^11.0" ;;
+          esac
+          # illuminate/* are production deps; testbench is a dev-only dep, so
+          # each require uses the matching flag to keep them in the right section.
+          composer require \
+            "illuminate/console:${illuminate}" \
+            "illuminate/database:${illuminate}" \
+            "illuminate/support:${illuminate}" \
+            --no-update --no-interaction --no-progress
+          composer require --dev \
+            "orchestra/testbench:${testbench}" \
+            --no-update --no-interaction --no-progress
+          composer update \
+            --prefer-dist --no-interaction --no-progress --no-scripts
 
-      - name: Upload coverage reports to Codecov
+      - name: Execute tests
+        env:
+          XDEBUG_MODE: ${{ matrix.coverage == true && 'coverage' || 'off' }}
+        run: >
+          composer test
+          -- --log-junit junit.xml
+          ${{ matrix.coverage == true && '--coverage-clover coverage.xml' || '' }}
+
+      - name: Upload coverage report to Codecov
+        if: ${{ matrix.coverage == true }}
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
