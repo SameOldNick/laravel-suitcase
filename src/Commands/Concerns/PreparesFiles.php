@@ -4,9 +4,10 @@ namespace SameOldNick\LaravelSuitcase\Commands\Concerns;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting;
 
 /**
- * @mixin \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting
+ * @mixin PackForSharedHosting
  */
 trait PreparesFiles
 {
@@ -14,13 +15,14 @@ trait PreparesFiles
      * Prepare the setup requirements.
      * Not complete.
      *
-     * @param  string  $setupPath
+     * @param  string  $publicPath  The path to the public directory.
+     * @param  array  $requirements  The setup requirements to prepare.
      * @return void
      */
     protected function prepareSetupRequirements(string $publicPath, array $requirements)
     {
         /**
-         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
+         * @var PackForSharedHosting $this
          */
         $this->info('Preparing setup requirements...');
 
@@ -35,22 +37,28 @@ trait PreparesFiles
     protected function createInstallFile(): void
     {
         /**
-         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
+         * @var PackForSharedHosting $this
          */
         $this->info('Creating INSTALL.txt file...');
 
         $path = $this->getConfig()->getExportPath().'/INSTALL.txt';
 
         // TODO: Pull from stubs
+        $databaseStep = $this->getConfig()->getDbDumpEnabled()
+            ? '6. Import the database: open phpMyAdmin, select the database you created, and import the database.sql file included in this package.'
+            : '6. Import your database schema and data using the tools in your hosting control panel (e.g., phpMyAdmin). A database.sql file was not included because database dumping was disabled when the package was created.';
+
         $steps = [
             'Perform the following steps to deploy your app:',
             '1. Upload the zip file to your shared hosting server.',
             '2. Unzip the file in the desired directory.',
             '3. Move the contents of the "laravel" directory to your Laravel root directory: '.$this->getConfig()->getRemoteLaravelPath(),
             '4. Move the contents of the "public_html" directory to your public directory: '.$this->getConfig()->getRemotePublicPath(),
-            '5. Ensure the .env file is configured correctly for production.',
-            '6. Set the correct permissions for the storage and bootstrap/cache directories.',
-            '7. Add the following Cron job to your server:',
+            '5. Create a MySQL database and a dedicated database user in your hosting control panel, and grant the user all privileges on the database.',
+            $databaseStep,
+            '7. Ensure the .env file is configured correctly for production by updating the database credentials (DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD).',
+            '8. Set the correct permissions for the storage and bootstrap/cache directories.',
+            '9. Add the following Cron job to your server:',
             '   * * * * * php '.$this->getConfig()->getRemoteLaravelPath().'/artisan schedule:run >> /dev/null 2>&1',
         ];
 
@@ -65,7 +73,7 @@ trait PreparesFiles
     protected function updateConstantsFile(string $constantsPath): void
     {
         /**
-         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
+         * @var PackForSharedHosting $this
          */
         $this->info('Updating constants.php file...');
 
@@ -84,7 +92,7 @@ trait PreparesFiles
     protected function updateEnvFile(string $envPath, array $envVariables): void
     {
         /**
-         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
+         * @var PackForSharedHosting $this
          */
         $this->info('Updating .env file...');
 
