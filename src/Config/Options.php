@@ -106,17 +106,9 @@ class Options implements OptionsContract
     /**
      * {@inheritDoc}
      */
-    public function getDbConnection(): string
+    public function getDbConnections(): array
     {
-        return $this->repository->getOption('db_dump.connection', 'mysql');
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getDbDumpOptions(): array
-    {
-        return $this->repository->getOption('db_dump.extra_options', []);
+        return $this->repository->getOption('db_dump.connections', []);
     }
 
     // === File Inclusion/Exclusion ===

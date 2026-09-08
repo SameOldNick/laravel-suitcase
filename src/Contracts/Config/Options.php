@@ -45,16 +45,11 @@ interface Options
     public function getDbDumpEnabled(): bool;
 
     /**
-     * Gets the database connection name to use for the dump.
-     */
-    public function getDbConnection(): string;
-
-    /**
-     * Gets any extra options for the database dump command.
+     * Gets the databases to dump.
      *
-     * @return array<string, mixed>
+     * @array<string, {dump_path: string, extra_options: array<string>}> The database connections to dump, with their respective dump paths and extra options.
      */
-    public function getDbDumpOptions(): array;
+    public function getDbConnections(): array;
 
     // === File Inclusion/Exclusion ===
 

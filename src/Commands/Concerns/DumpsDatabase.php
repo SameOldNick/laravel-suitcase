@@ -4,6 +4,7 @@ namespace SameOldNick\LaravelSuitcase\Commands\Concerns;
 
 use Illuminate\Database\ConfigurationUrlParser;
 use Illuminate\Support\Arr;
+use SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting;
 use SameOldNick\LaravelSuitcase\Extensions\MySqlPHP;
 use Spatie\DbDumper\Databases\MongoDb;
 use Spatie\DbDumper\Databases\PostgreSql;
@@ -11,7 +12,7 @@ use Spatie\DbDumper\Databases\Sqlite;
 use Spatie\DbDumper\DbDumper;
 
 /**
- * @mixin \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting
+ * @mixin PackForSharedHosting
  */
 trait DumpsDatabase
 {
@@ -21,20 +22,35 @@ trait DumpsDatabase
     protected function dumpDatabase(): void
     {
         /**
-         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
+         * @var PackForSharedHosting $this
          */
         $outputPath = $this->getConfig()->getExportPath();
-        $connectionName = $this->getConfig()->getDbConnection();
-        $dumpOptions = $this->getConfig()->getDbDumpOptions();
+
+        $connections = $this->getConfig()->getDbConnections();
+
+        foreach ($connections as $connectionName => $connectionConfig) {
+            $this->dumpDatabaseConnection($connectionName, $connectionConfig, $outputPath);
+        }
+    }
+
+    /**
+     * Dump the database for a specific connection.
+     */
+    protected function dumpDatabaseConnection(string $connectionName, array $connectionConfig, string $outputPath): void
+    {
+        $this->info("Creating database dump for connection: {$connectionName}...");
 
         $dbConfig = $this->getDbConfig($connectionName);
-        $dumper = $this->createDbDumper($dbConfig, $dumpOptions);
+        $dumper = $this->createDbDumper($dbConfig, $connectionConfig['extra_options'] ?? []);
 
-        $this->info('Creating database dump...');
+        $dumpFilePath =
+            $connectionConfig['dump_path'] ?
+            sprintf('%s/%s', $outputPath, $connectionConfig['dump_path']) :
+            sprintf('%s/database-%s.sql', $outputPath, $connectionName);
 
-        $dumper->dumpToFile($outputPath.'/database.sql');
+        $dumper->dumpToFile($dumpFilePath);
 
-        $this->info('Database dump created.');
+        $this->info("Database dump for connection {$connectionName} created at: {$dumpFilePath}");
     }
 
     /**
@@ -43,7 +59,7 @@ trait DumpsDatabase
     protected function getDbConfig(string $connectionName): array
     {
         /**
-         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
+         * @var PackForSharedHosting $this
          */
         $config = config("database.connections.{$connectionName}");
 
@@ -56,7 +72,7 @@ trait DumpsDatabase
     protected function createDbDumper(array $dbConfig, array $extraOptions): DbDumper
     {
         /**
-         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
+         * @var PackForSharedHosting $this
          */
 
         // TODO: Skip CREATE DATABASE

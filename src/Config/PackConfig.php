@@ -72,17 +72,9 @@ class PackConfig implements PackConfigContract
     /**
      * {@inheritDoc}
      */
-    public function getDbConnection(): string
+    public function getDbConnections(): array
     {
-        return $this->getOptions()->getDbConnection();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getDbDumpOptions(): array
-    {
-        return $this->getOptions()->getDbDumpOptions();
+        return $this->getOptions()->getDbConnections();
     }
 
     /**

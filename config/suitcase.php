@@ -11,12 +11,19 @@ return [
         // Whether to include a MySQL database dump
         'enabled' => true,
 
-        // Which DB connection to use
-        'connection' => 'mysql',
+        'connections' => [
+            // Each database connection configuration
+            // The key is the database connection name (as defined in config/database.php)
+            'mysql' => [
+                // Path to the SQL dump file (relative to export_dir)
+                'dump_path' => 'database.sql',
 
-        'extra_options' => [
-            // Skips the CREATE DATABASE statement
-            '--no-create-db',
+                // Additional options to pass to mysqldump
+                'extra_options' => [
+                    // Skips the CREATE DATABASE statement
+                    '--no-create-db',
+                ],
+            ],
         ],
     ],
 
