@@ -4,10 +4,11 @@ namespace SameOldNick\LaravelSuitcase\Commands\Concerns;
 
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting;
 use ZipArchive;
 
 /**
- * @mixin \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting
+ * @mixin PackForSharedHosting
  */
 trait HandlesZipping
 {
@@ -17,7 +18,7 @@ trait HandlesZipping
     protected function zipPackage(): void
     {
         /**
-         * @var \SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting $this
+         * @var PackForSharedHosting $this
          */
         $exportPath = $this->getConfig()->getExportPath();
         $zipPath = $this->getConfig()->getZipPath();
