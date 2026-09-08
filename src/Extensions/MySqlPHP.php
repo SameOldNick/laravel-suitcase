@@ -46,6 +46,8 @@ class MySqlPHP extends MySql
 
         if (! empty($this->socket)) {
             $options['unix_socket'] = $this->socket;
+        } else {
+            $options['port'] = $this->port;
         }
 
         $options['dbname'] = $this->dbName;
