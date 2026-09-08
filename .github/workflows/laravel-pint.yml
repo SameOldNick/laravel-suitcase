@@ -1,31 +1,40 @@
 name: Format (PHP)
 
 on:
-    push:
-        branches:
-            - 'main'
-    pull_request:
-        paths:
-            - '**.php'
+  push:
+    branches:
+      - "main"
+  pull_request:
+    paths:
+      - "**.php"
 
 jobs:
-    laravel-pint:
-        runs-on: ubuntu-latest
-        permissions:
-          contents: write
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                  repository: ${{ github.event.pull_request.head.repo.full_name }}
-                  ref: ${{ github.head_ref }}
-                  token: ${{ secrets.GITHUB_TOKEN }}
+  laravel-pint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Install
-              run: composer install
+      # composer.lock is committed and was resolved on PHP 8.4
+      # (e.g. symfony/* 8.1 requires PHP >= 8.4.1), so the runner must
+      # use PHP 8.4 to install from the lock file.
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          tools: composer:v2
 
-            - name: Run Laravel Pint
-              run: ./vendor/bin/pint -v
+      - name: Install
+        run: composer install --no-interaction --prefer-dist --no-progress
 
-            - uses: stefanzweifel/git-auto-commit-action@v5
-              with:
-                  commit_message: Applied Laravel Pint changes
+      - name: Run Laravel Pint
+        run: ./vendor/bin/pint -v
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Applied Laravel Pint changes
