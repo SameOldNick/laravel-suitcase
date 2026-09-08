@@ -1,0 +1,10 @@
+{
+    "[php]": {
+        "editor.defaultFormatter": "open-southeners.laravel-pint",
+        "editor.formatOnSave": true
+    },
+    "laravel-pint.enable": true,
+    "laravel-pint.preset": "laravel",
+    "laravel-pint.fallbackToGlobalBin": true,
+    "laravel-pint.enableDebugLogs": false
+}
