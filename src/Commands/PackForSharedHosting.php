@@ -18,10 +18,20 @@ class PackForSharedHosting extends Command
     use Concerns\PreparesDirectories;
     use Concerns\PreparesFiles;
 
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
     protected $signature = 'suitcase:pack
                             {--skip-vendor : Skip vendor directory}
                             {--skip-env : Skip .env file}';
 
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
     protected $description = 'Package Laravel app for deployment to shared hosting (e.g., cPanel)';
 
     public function handle(PackConfig $config, EnvVariables $envVariables)
