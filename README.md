@@ -46,16 +46,16 @@ Laravel Suitcase helps you package your Laravel app for deployment on shared hos
 
 Shared hosting does not support some features of Laravel, such as:
 
-- [Asynchronous queues](https://laravel.com/docs/12.x/queues)
-- [Broadcasting and WebSockets](https://laravel.com/docs/12.x/broadcasting)
-- [Artisan commands](https://laravel.com/docs/12.x/artisan)
+- [Asynchronous queues](https://laravel.com/docs/13.x/queues)
+- [Broadcasting and WebSockets](https://laravel.com/docs/13.x/broadcasting)
+- [Artisan commands](https://laravel.com/docs/13.x/artisan)
 
 If your Laravel app requires these features, you will need a [VPS](https://www.google.com/search?q=virtual+private+server) or [dedicated server](https://www.google.com/search?q=dedicated+server).
 
 ## Requirements
 
 - [PHP v8.1 or higher](https://www.php.net/downloads.php)
-- [Laravel 10.x, 11.x, or 12.x](https://laravel.com/docs/12.x)
+- [Laravel 10.x, 11.x, 12.x, or 13.x](https://laravel.com/docs/)
 
 **Required PHP extensions:**
 
