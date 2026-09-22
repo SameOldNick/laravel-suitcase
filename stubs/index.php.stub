@@ -48,9 +48,9 @@ require LARAVEL_ROOT_DIR.'/vendor/autoload.php';
 
 $app = require_once LARAVEL_ROOT_DIR.'/bootstrap/app.php';
 
-$app->usePublicPath(LARAVEL_PUBLIC_DIR);
-
 $kernel = $app->make(Kernel::class);
+
+$app->usePublicPath(LARAVEL_PUBLIC_DIR);
 
 $response = $kernel->handle(
     $request = Request::capture()
