@@ -5,6 +5,23 @@ All notable changes to Laravel Suitcase are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-09-21
+
+### Added
+
+- Configurable database dumpers per driver (`db_dump.dumpers`), with validation that the configured class implements `Spatie\DbDumper\DbDumper`.
+- MariaDB driver mapping to the pure-PHP MySQL dumper (`MySqlPHP`).
+- Error reporting for file copy, write, and ZIP operations during packaging.
+
+### Fixed
+
+- The generated `constants.php` now derives `LARAVEL_PUBLIC_DIR` from the configured public path instead of hardcoding `__DIR__`.
+- The shared-hosting front controller now applies the public path after the HTTP Kernel is created, so the public directory is set correctly.
+
+### Changed
+
+- Documentation references updated to Laravel 13.
+
 ## [1.0.0] - 2026-09-08
 
 ### Added
