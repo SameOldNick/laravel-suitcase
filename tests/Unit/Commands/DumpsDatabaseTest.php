@@ -30,6 +30,13 @@ class DumpsDatabaseTest extends TestCase
         $this->assertInstanceOf(MySqlPHP::class, $this->invoke($command, 'createDbDumperFor', ['mysql']));
     }
 
+    public function test_create_db_dumper_for_maps_mariadb_driver(): void
+    {
+        $command = $this->makePackCommand($this->packConfig());
+
+        $this->assertInstanceOf(MySqlPHP::class, $this->invoke($command, 'createDbDumperFor', ['mariadb']));
+    }
+
     public function test_create_db_dumper_for_maps_pgsql_driver(): void
     {
         $command = $this->makePackCommand($this->packConfig());
