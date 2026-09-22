@@ -6,6 +6,8 @@ use SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting;
 use SameOldNick\LaravelSuitcase\Contracts\Config\PackConfig;
 
 /**
+ * Provides methods for handling configuration in commands that implement the PackForSharedHosting interface.
+ *
  * @mixin PackForSharedHosting
  */
 trait HasConfig
@@ -17,9 +19,6 @@ trait HasConfig
      */
     protected function setConfig(PackConfig $config): static
     {
-        /**
-         * @var PackForSharedHosting $this
-         */
         $this->config = $config;
 
         return $this;
@@ -30,10 +29,6 @@ trait HasConfig
      */
     protected function getConfig(): PackConfig
     {
-        /**
-         * @var PackForSharedHosting $this
-         */
-
         return $this->config;
     }
 
@@ -42,9 +37,6 @@ trait HasConfig
      */
     protected function validateConfig(): bool
     {
-        /**
-         * @var PackForSharedHosting $this
-         */
         try {
             $this->config->validate();
         } catch (\InvalidArgumentException $e) {
