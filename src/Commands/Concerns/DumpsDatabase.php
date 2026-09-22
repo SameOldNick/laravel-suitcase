@@ -115,10 +115,11 @@ trait DumpsDatabase
     protected function createDbDumperFor(string $driver): DbDumper
     {
         $dumperClass = match ($driver) {
-            'mysql' => config('suitcase.dumpers.mysql', MySql::class),
-            'pgsql' => config('suitcase.dumpers.pgsql', PostgreSql::class),
-            'sqlite' => config('suitcase.dumpers.sqlite', Sqlite::class),
-            'mongodb' => config('suitcase.dumpers.mongodb', MongoDb::class),
+            'mysql' => config('suitcase.db_dump.dumpers.mysql', MySql::class),
+            'mariadb' => config('suitcase.db_dump.dumpers.mariadb', MySqlPHP::class),
+            'pgsql' => config('suitcase.db_dump.dumpers.pgsql', PostgreSql::class),
+            'sqlite' => config('suitcase.db_dump.dumpers.sqlite', Sqlite::class),
+            'mongodb' => config('suitcase.db_dump.dumpers.mongodb', MongoDb::class),
             default => throw new \InvalidArgumentException("Unsupported driver: {$driver}"),
         };
 
