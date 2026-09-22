@@ -11,7 +11,9 @@ class ConfigRepository implements Repository
 
     public function __construct(
         protected readonly LaravelConfigRepository $configRepository,
-    ) {}
+    ) {
+        //
+    }
 
     /**
      * {@inheritDoc}

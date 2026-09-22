@@ -9,6 +9,9 @@ use SameOldNick\LaravelSuitcase\Contracts\Config\PackConfig;
 use SameOldNick\LaravelSuitcase\Contracts\EnvVariables;
 use SameOldNick\LaravelSuitcase\Support\EventDispatcher;
 
+/**
+ * Command to package a Laravel application for deployment on shared hosting.
+ */
 class PackForSharedHosting extends Command
 {
     use Concerns\DumpsDatabase;
@@ -34,6 +37,11 @@ class PackForSharedHosting extends Command
      */
     protected $description = 'Package Laravel app for deployment to shared hosting (e.g., cPanel)';
 
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
     public function handle(PackConfig $config, EnvVariables $envVariables)
     {
         $eventDispatcher = new EventDispatcher($this, $config);

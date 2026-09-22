@@ -17,7 +17,9 @@ class Options implements OptionsContract
 
     public function __construct(
         protected readonly Repository $repository,
-    ) {}
+    ) {
+        //
+    }
 
     // === Export & Deployment Paths ===
 

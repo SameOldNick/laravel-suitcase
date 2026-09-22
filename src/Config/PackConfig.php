@@ -11,7 +11,9 @@ class PackConfig implements PackConfigContract
     public function __construct(
         protected readonly Options $options,
         protected readonly ValidatesConfig $validator
-    ) {}
+    ) {
+        //
+    }
 
     /**
      * {@inheritDoc}
