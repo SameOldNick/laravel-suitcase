@@ -107,19 +107,25 @@ class PreparesFilesTest extends TestCase
         $this->assertStringContainsString('NEW_ARRAY=a,b', $contents);
     }
 
-    public function test_update_constants_file_replaces_remote_path_placeholder(): void
+    public function test_update_constants_file_replaces_remote_path_placeholders(): void
     {
-        config(['suitcase.remote.laravel_path' => '/srv/www/laravel']);
+        config([
+            'suitcase.remote.public_path' => '/srv/www/public_html',
+            'suitcase.remote.laravel_path' => '/srv/www/laravel',
+        ]);
 
         $config = $this->packConfig();
         $command = $this->makePackCommand($config);
 
         $path = $this->app->basePath('constants-unit.php');
-        file_put_contents($path, "<?php\ndefine('LARAVEL_PUBLIC_DIR', __DIR__);\ndefine('LARAVEL_ROOT_DIR', {{ laravelRootDir }});\n");
+        file_put_contents($path, "<?php\ndefine('LARAVEL_PUBLIC_DIR', {{ laravelPublicDir }});\ndefine('LARAVEL_ROOT_DIR', {{ laravelRootDir }});\n");
 
         $this->invoke($command, 'updateConstantsFile', [$path]);
 
-        $this->assertStringContainsString("define('LARAVEL_ROOT_DIR', '/srv/www/laravel');", file_get_contents($path));
+        $contents = file_get_contents($path);
+
+        $this->assertStringContainsString("define('LARAVEL_PUBLIC_DIR', '/srv/www/public_html');", $contents);
+        $this->assertStringContainsString("define('LARAVEL_ROOT_DIR', '/srv/www/laravel');", $contents);
     }
 
     public function test_create_install_file_includes_database_instructions_when_dump_enabled(): void
