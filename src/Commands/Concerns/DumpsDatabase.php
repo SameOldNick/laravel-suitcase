@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting;
 use SameOldNick\LaravelSuitcase\Extensions\MySqlPHP;
 use Spatie\DbDumper\Databases\MongoDb;
+use Spatie\DbDumper\Databases\MySql;
 use Spatie\DbDumper\Databases\PostgreSql;
 use Spatie\DbDumper\Databases\Sqlite;
 use Spatie\DbDumper\DbDumper;
@@ -113,12 +114,19 @@ trait DumpsDatabase
      */
     protected function createDbDumperFor(string $driver): DbDumper
     {
-        return match ($driver) {
-            'mysql' => new MySqlPHP,
-            'pgsql' => new PostgreSql,
-            'sqlite' => new Sqlite,
-            'mongodb' => new MongoDb,
+        $dumperClass = match ($driver) {
+            'mysql' => config('suitcase.dumpers.mysql', MySql::class),
+            'pgsql' => config('suitcase.dumpers.pgsql', PostgreSql::class),
+            'sqlite' => config('suitcase.dumpers.sqlite', Sqlite::class),
+            'mongodb' => config('suitcase.dumpers.mongodb', MongoDb::class),
             default => throw new \InvalidArgumentException("Unsupported driver: {$driver}"),
         };
+
+        if (! is_a($dumperClass, DbDumper::class, true)) {
+            throw new \InvalidArgumentException("The dumper class for driver {$driver} must implement the Spatie\\DbDumper\\DbDumper interface.");
+        }
+
+        // Use the create() method to instantiate the dumper class, which is shown in the Spatie documentation.
+        return $dumperClass::create();
     }
 }

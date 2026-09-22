@@ -1,5 +1,7 @@
 <?php
 
+use SameOldNick\LaravelSuitcase\Extensions\MySqlPHP;
+
 return [
     // Name of the export folder (relative to base_path)
     'export_dir' => 'deploy',
@@ -24,6 +26,14 @@ return [
                     '--no-create-db',
                 ],
             ],
+        ],
+
+        'dumpers' => [
+            // Each database driver can have its own dumper class.
+            // The key is the database driver name (as defined in config/database.php)
+            // The value is the fully qualified class name of the dumper class that implements the Spatie\DbDumper\DbDumper interface.
+            'mysql' => MySqlPHP::class,
+            'mariadb' => MySqlPHP::class,
         ],
     ],
 
