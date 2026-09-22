@@ -5,6 +5,14 @@ All notable changes to Laravel Suitcase are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-09-21
+
+### Fixed
+
+- The generated `constants.php` now points `LARAVEL_PUBLIC_DIR` at the configured remote public path (`remote.public_path`) instead of the local export directory.
+- The shared-hosting storage helper route now reads `suitcase.storage_route` (a leftover `hostpack` key caused a fatal error when `SHARED_HOSTING=true`).
+- The environment customization event is now dispatched as `suitcase.env.variables` instead of `hostpack.env.variables`.
+
 ## [1.1.0] - 2026-09-21
 
 ### Added
