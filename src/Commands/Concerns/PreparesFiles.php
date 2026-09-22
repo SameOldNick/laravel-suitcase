@@ -26,9 +26,11 @@ trait PreparesFiles
          */
         $this->info('Preparing setup requirements...');
 
-        File::put("$publicPath/setup/requirements.php", "<?php\n\nreturn ".var_export($requirements, true).";\n");
-
-        $this->info('Setup requirements prepared successfully.');
+        if (File::put("$publicPath/setup/requirements.php", "<?php\n\nreturn ".var_export($requirements, true).";\n")) {
+            $this->info('Setup requirements prepared successfully.');
+        } else {
+            $this->error('Failed to prepare setup requirements.');
+        }
     }
 
     /**
@@ -62,9 +64,11 @@ trait PreparesFiles
             '   * * * * * php '.$this->getConfig()->getRemoteLaravelPath().'/artisan schedule:run >> /dev/null 2>&1',
         ];
 
-        File::put($path, implode("\n", $steps));
-
-        $this->info('INSTALL.txt file created successfully.');
+        if (File::put($path, implode("\n", $steps))) {
+            $this->info('INSTALL.txt file created successfully.');
+        } else {
+            $this->error('Failed to create INSTALL.txt file.');
+        }
     }
 
     /**
@@ -82,9 +86,11 @@ trait PreparesFiles
         $contents = Str::replace('{{ laravelPublicDir }}', "'".addslashes($this->getConfig()->getPublicPath())."'", $contents);
         $contents = Str::replace('{{ laravelRootDir }}', "'".addslashes($this->getConfig()->getRemoteLaravelPath())."'", $contents);
 
-        File::put($constantsPath, $contents);
-
-        $this->info('Updated constants.php file successfully.');
+        if (File::put($constantsPath, $contents)) {
+            $this->info('Updated constants.php file successfully.');
+        } else {
+            $this->error('Failed to update constants.php file.');
+        }
     }
 
     /**

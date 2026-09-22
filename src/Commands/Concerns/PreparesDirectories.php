@@ -24,7 +24,11 @@ trait PreparesDirectories
         $this->prepareLaravelDirectory($this->getConfig()->getLaravelPath());
         $this->preparePublicDirectory($this->getConfig()->getPublicPath());
 
-        File::put("{$this->getConfig()->getExportPath()}/.gitignore", "*\n!.gitignore\n");
+        if (File::put("{$this->getConfig()->getExportPath()}/.gitignore", "*\n!.gitignore\n")) {
+            $this->info('.gitignore file created successfully in the export directory.');
+        } else {
+            $this->error('Failed to create .gitignore file in the export directory.');
+        }
 
         $this->info('Export directories prepared successfully.');
     }
@@ -39,8 +43,17 @@ trait PreparesDirectories
          */
         $this->info("Preparing export directory: $path...");
 
-        File::deleteDirectory($path);
-        File::makeDirectory($path, 0755, true);
+        if (File::deleteDirectory($path)) {
+            $this->info("Deleted existing export directory: $path.");
+        } else {
+            $this->error("Failed to delete existing export directory: $path.");
+        }
+
+        if (File::makeDirectory($path, 0755, true)) {
+            $this->info("Export directory created successfully: $path.");
+        } else {
+            $this->error("Failed to create export directory: $path.");
+        }
 
         $this->createGitIgnoreFile($path);
 
@@ -99,9 +112,11 @@ trait PreparesDirectories
          */
         $this->info("Preparing public directory: $path...");
 
-        File::makeDirectory($path, 0755, true);
-
-        $this->info("Public directory prepared successfully: $path.");
+        if (File::makeDirectory($path, 0755, true)) {
+            $this->info("Public directory prepared successfully: $path.");
+        } else {
+            $this->error("Failed to prepare public directory: $path.");
+        }
     }
 
     /**
@@ -109,6 +124,10 @@ trait PreparesDirectories
      */
     protected function createGitIgnoreFile(string $path): void
     {
-        File::put("$path/.gitignore", "*\n!.gitignore\n");
+        if (File::put("$path/.gitignore", "*\n!.gitignore\n")) {
+            $this->info(".gitignore file created successfully in: $path.");
+        } else {
+            $this->error("Failed to create .gitignore file in: $path.");
+        }
     }
 }

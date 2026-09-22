@@ -114,9 +114,12 @@ trait HandlesFileExport
 
             $filename = basename($destination);
 
-            File::copy($source, $destination);
+            if (File::copy($source, $destination)) {
+                $bar->setMessage("Exported {$filename} file successfully.");
+            } else {
+                $bar->setMessage("Failed to export {$filename} file.");
+            }
 
-            $bar->setMessage("Exported {$filename} file successfully.");
             $bar->advance();
         }
 
@@ -223,7 +226,12 @@ trait HandlesFileExport
                 File::ensureDirectoryExists($destinationPath, 0755, true);
             } elseif (is_file($itemPath)) {
                 $bar->setMessage("Copying file: {$destinationPath}");
-                File::copy($itemPath, $destinationPath);
+
+                if (File::copy($itemPath, $destinationPath)) {
+                    $bar->setMessage("Copied file successfully: {$destinationPath}");
+                } else {
+                    $bar->setMessage("Failed to copy file: {$destinationPath}");
+                }
             }
         });
 

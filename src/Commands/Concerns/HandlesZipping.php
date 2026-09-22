@@ -52,7 +52,9 @@ trait HandlesZipping
 
                 $bar->setMessage('Zipping: '.$relativePath);
 
-                $zip->addFile($filePath, $relativePath);
+                if (! $zip->addFile($filePath, $relativePath)) {
+                    $this->error('Failed to add file to zip: '.$relativePath);
+                }
             }
 
             $bar->advance();
