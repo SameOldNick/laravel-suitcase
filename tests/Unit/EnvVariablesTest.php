@@ -2,6 +2,7 @@
 
 namespace SameOldNick\LaravelSuitcase\Tests\Unit;
 
+use Illuminate\Support\Facades\Event;
 use SameOldNick\LaravelSuitcase\Support\EnvVariables;
 use SameOldNick\LaravelSuitcase\Tests\TestCase;
 
@@ -35,5 +36,14 @@ class EnvVariablesTest extends TestCase
         $this->assertSame('true', $variables['SHARED_HOSTING']);
         $this->assertSame('production', $variables['APP_ENV']);
         $this->assertArrayHasKey('APP_KEY', $variables);
+    }
+
+    public function test_customized_variables_dispatch_suitcase_env_event(): void
+    {
+        Event::fake();
+
+        (new EnvVariables)->getCustomizedVariables();
+
+        Event::assertDispatched('suitcase.env.variables');
     }
 }

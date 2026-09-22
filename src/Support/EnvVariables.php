@@ -22,7 +22,7 @@ class EnvVariables implements EnvVariablesContract
         $variables = $this->getDefaultVariables();
 
         // Dispatch an event to allow customization
-        event('hostpack.env.variables', ['variables' => &$variables]);
+        event('suitcase.env.variables', ['variables' => &$variables]);
 
         return $variables;
     }
