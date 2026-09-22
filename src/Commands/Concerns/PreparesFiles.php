@@ -79,6 +79,7 @@ trait PreparesFiles
 
         $contents = File::get($constantsPath);
 
+        $contents = Str::replace('{{ laravelPublicDir }}', "'".addslashes($this->getConfig()->getPublicPath())."'", $contents);
         $contents = Str::replace('{{ laravelRootDir }}', "'".addslashes($this->getConfig()->getRemoteLaravelPath())."'", $contents);
 
         File::put($constantsPath, $contents);
