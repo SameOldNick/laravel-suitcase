@@ -38,17 +38,24 @@ class PackForSharedHostingRunner
         app(Pipeline::class)
             ->send($context)
             ->through($this->createPipelineSteps())
-            ->then(function (PackPipelineContext $context) {
-                $context->getOutputter()->newLine();
-                $context->getOutputter()->success('✅ Package created successfully: '.$context->getConfig()->getZipPath());
+            ->then($this->finish(...));
+    }
 
-                $context->getEventDispatcher()?->dispatch('suitcase.completed');
+    /**
+     * Finish the packaging process and display the final output.
+     *
+     * @param  PackPipelineContext  $context  The context of the packaging process.
+     */
+    protected function finish(PackPipelineContext $context)
+    {
+        $context->getOutputter()->newLine();
+        $context->getOutputter()->success('✅ Package created successfully: '.$context->getConfig()->getZipPath());
 
-                $context->getOutputter()->info('To deploy your app, follow the instructions in the INSTALL.txt file.');
+        $context->getEventDispatcher()?->dispatch('suitcase.completed');
 
-                $context->getOutputter()->newLine();
-            });
+        $context->getOutputter()->info('To deploy your app, follow the instructions in the INSTALL.txt file.');
 
+        $context->getOutputter()->newLine();
     }
 
     /**
