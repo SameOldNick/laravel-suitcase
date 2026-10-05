@@ -111,4 +111,14 @@ interface Options
      * Gets the path to the remote public_html directory on the shared hosting server.
      */
     public function getRemotePublicPath(): string;
+
+    /**
+     * Checks if the .env file should be skipped during export.
+     */
+    public function shouldSkipEnv(): bool;
+
+    /**
+     * Checks if the vendor directory should be skipped during export.
+     */
+    public function shouldSkipVendor(): bool;
 }

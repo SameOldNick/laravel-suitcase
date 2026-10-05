@@ -117,4 +117,12 @@ return [
         // Can also be set with the EXPORT_LARAVEL_PATH environment variable.
         'laravel_path' => env('EXPORT_LARAVEL_PATH'),
     ],
+
+    // Options for skipping certain files or directories during export.
+    'skip' => [
+        // If true, the .env file will be skipped during export.
+        'env' => env('SKIP_ENV', false),
+        // If true, the vendor directory will be skipped during export.
+        'vendor' => env('SKIP_VENDOR', false),
+    ],
 ];

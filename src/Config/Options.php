@@ -63,6 +63,10 @@ class Options implements OptionsContract
         ?string $publicPath,
         #[Config('suitcase.export.laravel_path', null)]
         ?string $laravelPath,
+        #[Config('suitcase.skip.vendor', false)]
+        protected readonly bool $skipVendor,
+        #[Config('suitcase.skip.env', false)]
+        protected readonly bool $skipEnv,
     ) {
         $this->publicPath = $publicPath ?? $this->getExportPath().'/public_html';
         $this->laravelPath = $laravelPath ?? $this->getExportPath().'/laravel';
@@ -200,5 +204,21 @@ class Options implements OptionsContract
     public function getPublicExcludes(): array
     {
         return $this->publicExcludes;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function shouldSkipEnv(): bool
+    {
+        return $this->skipEnv;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function shouldSkipVendor(): bool
+    {
+        return $this->skipVendor;
     }
 }

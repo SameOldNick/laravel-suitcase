@@ -152,6 +152,22 @@ class PackConfig implements PackConfigContract
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function shouldSkipEnv(): bool
+    {
+        return $this->getOptions()->shouldSkipEnv();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function shouldSkipVendor(): bool
+    {
+        return $this->getOptions()->shouldSkipVendor();
+    }
+
+    /**
      * Gets the options instance.
      */
     protected function getOptions(): Options
