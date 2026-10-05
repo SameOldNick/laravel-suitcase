@@ -47,10 +47,14 @@ class PreparesDirectories implements PackPipelineStep
     {
         $context->getOutputter()->info("Preparing export directory: $path...");
 
-        if (File::deleteDirectory($path)) {
-            $context->getOutputter()->info("Deleted existing export directory: $path.");
-        } else {
-            throw new ExportDirectoryNotDeleted($path);
+        // A missing export directory is expected on a first run; only a
+        // directory that exists but cannot be removed is an error.
+        if (File::isDirectory($path)) {
+            if (File::deleteDirectory($path)) {
+                $context->getOutputter()->info("Deleted existing export directory: $path.");
+            } else {
+                throw new ExportDirectoryNotDeleted($path);
+            }
         }
 
         if (File::makeDirectory($path, 0755, true)) {
