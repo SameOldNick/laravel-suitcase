@@ -142,7 +142,7 @@ class DumpsDatabaseTest extends TestCase
 
         $step->shouldReceive('createDbDumper')->once()->andReturn($dumper);
 
-        $step($context);
+        $step->perform($context);
     }
 
     public function test_dump_database_is_skipped_when_disabled(): void
@@ -157,7 +157,7 @@ class DumpsDatabaseTest extends TestCase
 
         $step->shouldNotReceive('dumpDatabaseConnection');
 
-        $step($context);
+        $step->perform($context);
 
         $messages = array_column($outputter->getMessages(), 'message');
         $this->assertContains('Skipping database dump as per configuration.', $messages);

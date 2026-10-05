@@ -26,8 +26,8 @@ class HandlesFileExportTest extends TestCase
         $context = $this->createContext($config);
         $step = $this->createStep();
 
-        (new PreparesDirectories)($context);
-        $step($context);
+        (new PreparesDirectories)->perform($context);
+        $step->perform($context);
 
         $laravel = $config->getLaravelPath();
         $public = $config->getPublicPath();
@@ -61,8 +61,8 @@ class HandlesFileExportTest extends TestCase
         $context = $this->createContext($config);
         $step = $this->createStep();
 
-        (new PreparesDirectories)($context);
-        $step($context);
+        (new PreparesDirectories)->perform($context);
+        $step->perform($context);
 
         $this->assertFileDoesNotExist($config->getLaravelPath().'/.env');
         $this->assertFileExists($config->getPublicPath().'/index.php');

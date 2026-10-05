@@ -12,7 +12,7 @@ class HandlesFileExport implements PackPipelineStep
     /**
      * Handles the file export process.
      */
-    public function __invoke(PackPipelineContext $context): void
+    public function perform(PackPipelineContext $context): void
     {
         $context->getOutputter()->info('Exporting files...');
 

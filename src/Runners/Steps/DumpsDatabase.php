@@ -19,7 +19,7 @@ class DumpsDatabase implements PackPipelineStep
     /**
      * Dump the database to a file.
      */
-    public function __invoke(PackPipelineContext $context): void
+    public function perform(PackPipelineContext $context): void
     {
         if (! $context->getConfig()->getDbDumpEnabled()) {
             $context->getOutputter()->info('Skipping database dump as per configuration.');

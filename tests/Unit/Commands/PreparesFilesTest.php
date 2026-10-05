@@ -198,7 +198,7 @@ class PreparesFilesTest extends TestCase
         file_put_contents($publicPath.'/constants.php', "<?php\ndefine('LARAVEL_PUBLIC_DIR', {{ laravelPublicDir }});\n");
         file_put_contents($laravelPath.'/.env', "APP_NAME=OldName\n");
 
-        $step($context);
+        $step->perform($context);
 
         $this->assertFileExists($config->getExportPath().'/INSTALL.txt');
         $this->assertStringContainsString(

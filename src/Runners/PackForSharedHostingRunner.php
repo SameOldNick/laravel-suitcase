@@ -72,7 +72,7 @@ class PackForSharedHostingRunner
         return array_map(fn ($step) => function ($context, \Closure $next) use ($step) {
             $stepInstance = app($step);
 
-            $stepInstance($context);
+            $stepInstance->perform($context);
 
             return $next($context);
         }, $this->getSteps());

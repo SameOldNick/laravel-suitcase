@@ -15,7 +15,7 @@ class PreparesDirectories implements PackPipelineStep
     /**
      * Prepare the necessary directories for the export process.
      */
-    public function __invoke(PackPipelineContext $context): void
+    public function perform(PackPipelineContext $context): void
     {
         $context->getOutputter()->info('Preparing export directories...');
 

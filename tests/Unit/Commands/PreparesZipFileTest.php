@@ -19,7 +19,7 @@ class PreparesZipFileTest extends TestCase
 
         $context = $this->createContext($config);
 
-        (new PreparesZipFile)($context);
+        (new PreparesZipFile)->perform($context);
 
         $this->assertFileExists($config->getZipPath());
     }
@@ -34,6 +34,6 @@ class PreparesZipFileTest extends TestCase
         $this->expectException(ZipFileNotWritable::class);
         $this->expectExceptionMessage('The ZIP file is not writable');
 
-        (new PreparesZipFile)($context);
+        (new PreparesZipFile)->perform($context);
     }
 }

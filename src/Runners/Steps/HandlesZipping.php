@@ -13,7 +13,7 @@ class HandlesZipping implements PackPipelineStep
     /**
      * Handle the zipping of files in the export directory into a ZIP file.
      */
-    public function __invoke(PackPipelineContext $context): void
+    public function perform(PackPipelineContext $context): void
     {
         $exportPath = $context->getConfig()->getExportPath();
         $zipPath = $context->getConfig()->getZipPath();

@@ -24,7 +24,7 @@ class PreparesDirectoriesTest extends TestCase
         $context = $this->createContext($config, outputter: $outputter);
         $step = $this->createStep();
 
-        $step($context);
+        $step->perform($context);
 
         $this->assertDirectoryExists($config->getExportPath());
         $this->assertDirectoryExists($config->getPublicPath());

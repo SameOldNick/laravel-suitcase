@@ -12,7 +12,7 @@ class PreparesFiles implements PackPipelineStep
     /**
      * Prepare the necessary files for the export process.
      */
-    public function __invoke(PackPipelineContext $context): void
+    public function perform(PackPipelineContext $context): void
     {
         // Update index.php to point to the correct Laravel directory
         $this->updateConstantsFile($context, "{$context->getConfig()->getPublicPath()}/constants.php");

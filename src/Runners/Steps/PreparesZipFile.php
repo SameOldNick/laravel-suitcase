@@ -12,7 +12,7 @@ class PreparesZipFile implements PackPipelineStep
     /**
      * Prepare the ZIP file for the export process.
      */
-    public function __invoke(PackPipelineContext $context): void
+    public function perform(PackPipelineContext $context): void
     {
         $context->getOutputter()->info('Preparing app for shared hosting...');
         $context->getEventDispatcher()?->dispatch('suitcase.preparing');

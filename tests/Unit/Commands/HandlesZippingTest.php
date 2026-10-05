@@ -29,7 +29,7 @@ class HandlesZippingTest extends TestCase
         file_put_contents($exportPath.'/a.txt', 'a');
         file_put_contents($exportPath.'/sub/b.txt', 'b');
 
-        $step($context);
+        $step->perform($context);
 
         $zipPath = $config->getZipPath();
 
@@ -52,14 +52,14 @@ class HandlesZippingTest extends TestCase
         mkdir($exportPath, 0777, true);
         file_put_contents($exportPath.'/stale.txt', 'stale');
 
-        $step($context);
+        $step->perform($context);
 
         // Change the contents and zip again - the old entry should disappear.
         static::removeDirectory($exportPath);
         mkdir($exportPath, 0777, true);
         file_put_contents($exportPath.'/fresh.txt', 'fresh');
 
-        $step($context);
+        $step->perform($context);
 
         $entries = $this->zipEntries($config->getZipPath());
 
