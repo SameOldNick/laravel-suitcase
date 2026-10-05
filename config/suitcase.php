@@ -102,4 +102,19 @@ return [
 
     // Route to create a symbolic link to the storage directory
     'storage_route' => env('STORAGE_ROUTE', '/storage'),
+
+    // Where the packaged files are written on this machine. These are local
+    // paths used while building the package, unlike the `remote` paths above
+    // which describe the shared hosting server.
+    'export' => [
+        // Directory the exported public_html files are written to.
+        // When null, defaults to `<export_dir>/public_html`.
+        // Can also be set with the EXPORT_PUBLIC_PATH environment variable.
+        'public_path' => env('EXPORT_PUBLIC_PATH'),
+
+        // Directory the exported Laravel application is written to.
+        // When null, defaults to `<export_dir>/laravel`.
+        // Can also be set with the EXPORT_LARAVEL_PATH environment variable.
+        'laravel_path' => env('EXPORT_LARAVEL_PATH'),
+    ],
 ];

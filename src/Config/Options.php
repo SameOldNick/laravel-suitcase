@@ -18,6 +18,16 @@ class Options implements OptionsContract
     public const CONSTANTS_STUB = __DIR__.'/../../stubs/constants.php.stub';
 
     /**
+     * Path to the public directory on the shared hosting server
+     */
+    protected readonly string $publicPath;
+
+    /**
+     * Path to the Laravel directory on the shared hosting server
+     */
+    protected readonly string $laravelPath;
+
+    /**
      * Constructs Options instance
      */
     public function __construct(
@@ -49,10 +59,13 @@ class Options implements OptionsContract
         protected readonly string $indexStub,
         #[Config('suitcase.stubs.constants', self::CONSTANTS_STUB)]
         protected readonly string $constantsStub,
-        protected readonly ?string $publicPath = null,
-        protected readonly ?string $laravelPath = null,
+        #[Config('suitcase.export.public_path', null)]
+        ?string $publicPath,
+        #[Config('suitcase.export.laravel_path', null)]
+        ?string $laravelPath,
     ) {
-        //
+        $this->publicPath = $publicPath ?? $this->getExportPath().'/public_html';
+        $this->laravelPath = $laravelPath ?? $this->getExportPath().'/laravel';
     }
 
     // === Export & Deployment Paths ===
@@ -102,7 +115,7 @@ class Options implements OptionsContract
      */
     public function getPublicPath(): string
     {
-        return $this->publicPath ?? $this->getExportPath().'/public_html';
+        return $this->publicPath;
     }
 
     /**
@@ -110,7 +123,7 @@ class Options implements OptionsContract
      */
     public function getLaravelPath(): string
     {
-        return $this->laravelPath ?? $this->getExportPath().'/laravel';
+        return $this->laravelPath;
     }
 
     /**
