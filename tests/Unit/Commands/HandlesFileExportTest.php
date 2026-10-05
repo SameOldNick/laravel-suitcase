@@ -2,23 +2,32 @@
 
 namespace SameOldNick\LaravelSuitcase\Tests\Unit\Commands;
 
+use SameOldNick\LaravelSuitcase\Contracts\PackPipelineStep;
+use SameOldNick\LaravelSuitcase\Runners\Steps\HandlesFileExport;
+use SameOldNick\LaravelSuitcase\Runners\Steps\PreparesDirectories;
 use SameOldNick\LaravelSuitcase\Tests\TestCase;
 
 /**
- * Unit tests for the `HandlesFileExport` concern.
+ * Unit tests for the `HandlesFileExport` pipeline step.
  */
 class HandlesFileExportTest extends TestCase
 {
+    protected function createStep(): PackPipelineStep
+    {
+        return new HandlesFileExport;
+    }
+
     public function test_export_files_copies_laravel_and_public_directories(): void
     {
         $this->givenMinimalLaravelApp();
         $this->givenSharedEnvFile();
 
         $config = $this->packConfig();
-        $command = $this->makePackCommand($config);
+        $context = $this->createContext($config);
+        $step = $this->createStep();
 
-        $this->invoke($command, 'prepareExportDirectories');
-        $this->invoke($command, 'exportFiles');
+        (new PreparesDirectories)($context);
+        $step($context);
 
         $laravel = $config->getLaravelPath();
         $public = $config->getPublicPath();
@@ -30,7 +39,7 @@ class HandlesFileExportTest extends TestCase
         $this->assertFileExists($laravel.'/config/custom.php');
         $this->assertFileExists($laravel.'/routes/web.php');
 
-        // .env is exported from .env.shared unless --skip-env.
+        // .env is exported from .env.shared unless env export is skipped.
         $this->assertFileExists($laravel.'/.env');
 
         // Public directory contents.
@@ -43,16 +52,17 @@ class HandlesFileExportTest extends TestCase
         $this->assertStringContainsString('constants.php', file_get_contents($public.'/index.php'));
     }
 
-    public function test_export_files_respects_skip_env_option(): void
+    public function test_export_files_respects_skip_env_config(): void
     {
         $this->givenMinimalLaravelApp();
         $this->givenSharedEnvFile();
 
-        $config = $this->packConfig();
-        $command = $this->makePackCommand($config, ['--skip-env' => true]);
+        $config = $this->packConfig(['skip.env' => true]);
+        $context = $this->createContext($config);
+        $step = $this->createStep();
 
-        $this->invoke($command, 'prepareExportDirectories');
-        $this->invoke($command, 'exportFiles');
+        (new PreparesDirectories)($context);
+        $step($context);
 
         $this->assertFileDoesNotExist($config->getLaravelPath().'/.env');
         $this->assertFileExists($config->getPublicPath().'/index.php');
@@ -67,10 +77,10 @@ class HandlesFileExportTest extends TestCase
         file_put_contents($this->app->basePath('public/hot'), 'hot-file');
 
         $config = $this->packConfig();
-        $command = $this->makePackCommand($config);
+        $context = $this->createContext($config);
+        $step = $this->createStep();
 
-        $this->invoke($command, 'prepareExportDirectories');
-        $this->invoke($command, 'exportPublicDirectory', [$this->app->basePath('public')]);
+        $this->invoke($step, 'exportPublicDirectory', [$context, $this->app->basePath('public')]);
 
         $public = $config->getPublicPath();
 
@@ -81,12 +91,13 @@ class HandlesFileExportTest extends TestCase
 
     public function test_copy_directory_honors_excludes(): void
     {
-        $command = $this->makePackCommand($this->packConfig());
+        $context = $this->createContext($this->packConfig());
+        $step = $this->createStep();
 
         $source = $this->createSourceTree();
         $destination = $this->app->basePath('copydst-excludes');
 
-        $this->invoke($command, 'copyDirectory', [$source, $destination, [], ['sub/drop.txt']]);
+        $this->invoke($step, 'copyDirectory', [$context, $source, $destination, [], ['sub/drop.txt']]);
 
         $this->assertFileExists($destination.'/root.txt');
         $this->assertFileExists($destination.'/keep.txt');
@@ -96,12 +107,13 @@ class HandlesFileExportTest extends TestCase
 
     public function test_copy_directory_honors_includes(): void
     {
-        $command = $this->makePackCommand($this->packConfig());
+        $context = $this->createContext($this->packConfig());
+        $step = $this->createStep();
 
         $source = $this->createSourceTree();
         $destination = $this->app->basePath('copydst-includes');
 
-        $this->invoke($command, 'copyDirectory', [$source, $destination, ['root.txt'], []]);
+        $this->invoke($step, 'copyDirectory', [$context, $source, $destination, ['root.txt'], []]);
 
         $this->assertFileExists($destination.'/root.txt');
         $this->assertFileDoesNotExist($destination.'/keep.txt');
@@ -110,13 +122,14 @@ class HandlesFileExportTest extends TestCase
 
     public function test_copy_directory_with_basename_exclude_matches_nested_files(): void
     {
-        $command = $this->makePackCommand($this->packConfig());
+        $context = $this->createContext($this->packConfig());
+        $step = $this->createStep();
 
         $source = $this->createSourceTree();
         $destination = $this->app->basePath('copydst-basename');
 
         // A bare `keep.txt` exclude should also match the nested copy via basename.
-        $this->invoke($command, 'copyDirectory', [$source, $destination, [], ['keep.txt']]);
+        $this->invoke($step, 'copyDirectory', [$context, $source, $destination, [], ['keep.txt']]);
 
         $this->assertFileExists($destination.'/root.txt');
         $this->assertFileExists($destination.'/sub/drop.txt');

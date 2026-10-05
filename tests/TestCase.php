@@ -6,6 +6,11 @@ use Illuminate\Console\OutputStyle;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting;
 use SameOldNick\LaravelSuitcase\Contracts\Config\PackConfig;
+use SameOldNick\LaravelSuitcase\Contracts\EnvVariables;
+use SameOldNick\LaravelSuitcase\Contracts\Outputter;
+use SameOldNick\LaravelSuitcase\Runners\PackPipelineContext;
+use SameOldNick\LaravelSuitcase\Support\EventDispatcher;
+use SameOldNick\LaravelSuitcase\Support\Outputters\OutputRecorder;
 use SameOldNick\LaravelSuitcase\Tests\Support\TestServiceProvider;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -220,6 +225,23 @@ abstract class TestCase extends OrchestraTestCase
     }
 
     /**
+     * Create a new PackPipelineContext instance.
+     */
+    protected function createContext(
+        PackConfig $config,
+        ?EnvVariables $envVariables = null,
+        ?Outputter $outputter = null,
+        ?EventDispatcher $eventDispatcher = null
+    ): PackPipelineContext {
+        return new PackPipelineContext(
+            $config,
+            $envVariables ?? $this->app->make(EnvVariables::class),
+            $outputter ?? new OutputRecorder,
+            $eventDispatcher ?? new EventDispatcher($config),
+        );
+    }
+
+    /**
      * Build a real PackForSharedHosting command wired with input/output so its
      * protected component methods can be invoked directly.
      *
@@ -241,7 +263,7 @@ abstract class TestCase extends OrchestraTestCase
         $this->setReflected($command, 'output', $output);
         self::$commandBuffers[$command] = $buffer;
 
-        $this->invoke($command, 'setConfig', [$config]);
+        // $this->invoke($command, 'setConfig', [$config]);
 
         return $command;
     }

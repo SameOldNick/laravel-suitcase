@@ -5,25 +5,18 @@ namespace SameOldNick\LaravelSuitcase\Tests\Unit\Commands;
 use SameOldNick\LaravelSuitcase\Tests\TestCase;
 
 /**
- * Unit tests for the `HasConfig` concern (config validation).
+ * Unit tests for the `suitcase:pack` command's configuration validation.
  */
-class HasConfigTest extends TestCase
+class PackForSharedHostingTest extends TestCase
 {
-    public function test_set_and_get_config_roundtrip(): void
-    {
-        $config = $this->packConfig();
-        $command = $this->makePackCommand($config);
-
-        $this->assertSame($config, $this->invoke($command, 'getConfig'));
-    }
-
     public function test_validate_config_returns_true_when_env_file_exists(): void
     {
         $this->givenSharedEnvFile();
 
-        $command = $this->makePackCommand($this->packConfig());
+        $config = $this->packConfig();
+        $command = $this->makePackCommand($config);
 
-        $this->assertTrue($this->invoke($command, 'validateConfig'));
+        $this->assertTrue($this->invoke($command, 'validateConfig', [$config]));
     }
 
     public function test_validate_config_returns_false_and_reports_error_when_env_missing(): void
@@ -31,9 +24,10 @@ class HasConfigTest extends TestCase
         // Intentionally no .env.shared file (a previous test may have created one).
         @unlink($this->app->basePath('.env.shared'));
 
-        $command = $this->makePackCommand($this->packConfig());
+        $config = $this->packConfig();
+        $command = $this->makePackCommand($config);
 
-        $this->assertFalse($this->invoke($command, 'validateConfig'));
+        $this->assertFalse($this->invoke($command, 'validateConfig', [$config]));
 
         $output = $this->commandOutput($command);
         $this->assertStringContainsString('Configuration error', $output);
@@ -47,9 +41,10 @@ class HasConfigTest extends TestCase
         // Point env_file at a path that does not exist.
         config(['suitcase.env_file' => 'missing/shared.env']);
 
-        $command = $this->makePackCommand($this->packConfig());
+        $config = $this->packConfig();
+        $command = $this->makePackCommand($config);
 
-        $this->assertFalse($this->invoke($command, 'validateConfig'));
+        $this->assertFalse($this->invoke($command, 'validateConfig', [$config]));
         $this->assertStringContainsString('Configuration error', $this->commandOutput($command));
     }
 }

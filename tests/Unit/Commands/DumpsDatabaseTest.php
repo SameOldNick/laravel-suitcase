@@ -2,77 +2,79 @@
 
 namespace SameOldNick\LaravelSuitcase\Tests\Unit\Commands;
 
-use Illuminate\Console\OutputStyle;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use Mockery\MockInterface;
-use SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting;
-use SameOldNick\LaravelSuitcase\Contracts\Config\PackConfig;
+use SameOldNick\LaravelSuitcase\Contracts\PackPipelineStep;
 use SameOldNick\LaravelSuitcase\Extensions\MySqlPHP;
+use SameOldNick\LaravelSuitcase\Runners\Steps\DumpsDatabase;
+use SameOldNick\LaravelSuitcase\Support\Outputters\OutputRecorder;
 use SameOldNick\LaravelSuitcase\Tests\TestCase;
 use Spatie\DbDumper\Databases\MongoDb;
 use Spatie\DbDumper\Databases\PostgreSql;
 use Spatie\DbDumper\Databases\Sqlite;
 use Spatie\DbDumper\DbDumper;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
 
 /**
- * Unit tests for the `DumpsDatabase` concern.
+ * Unit tests for the `DumpsDatabase` pipeline step.
  */
 class DumpsDatabaseTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
+    protected function createStep(): PackPipelineStep
+    {
+        return new DumpsDatabase;
+    }
+
     public function test_create_db_dumper_for_maps_mysql_driver(): void
     {
-        $command = $this->makePackCommand($this->packConfig());
+        $step = $this->createStep();
 
-        $this->assertInstanceOf(MySqlPHP::class, $this->invoke($command, 'createDbDumperFor', ['mysql']));
+        $this->assertInstanceOf(MySqlPHP::class, $this->invoke($step, 'createDbDumperFor', ['mysql']));
     }
 
     public function test_create_db_dumper_for_maps_mariadb_driver(): void
     {
-        $command = $this->makePackCommand($this->packConfig());
+        $step = $this->createStep();
 
-        $this->assertInstanceOf(MySqlPHP::class, $this->invoke($command, 'createDbDumperFor', ['mariadb']));
+        $this->assertInstanceOf(MySqlPHP::class, $this->invoke($step, 'createDbDumperFor', ['mariadb']));
     }
 
     public function test_create_db_dumper_for_maps_pgsql_driver(): void
     {
-        $command = $this->makePackCommand($this->packConfig());
+        $step = $this->createStep();
 
-        $this->assertInstanceOf(PostgreSql::class, $this->invoke($command, 'createDbDumperFor', ['pgsql']));
+        $this->assertInstanceOf(PostgreSql::class, $this->invoke($step, 'createDbDumperFor', ['pgsql']));
     }
 
     public function test_create_db_dumper_for_maps_sqlite_driver(): void
     {
-        $command = $this->makePackCommand($this->packConfig());
+        $step = $this->createStep();
 
-        $this->assertInstanceOf(Sqlite::class, $this->invoke($command, 'createDbDumperFor', ['sqlite']));
+        $this->assertInstanceOf(Sqlite::class, $this->invoke($step, 'createDbDumperFor', ['sqlite']));
     }
 
     public function test_create_db_dumper_for_maps_mongodb_driver(): void
     {
-        $command = $this->makePackCommand($this->packConfig());
+        $step = $this->createStep();
 
-        $this->assertInstanceOf(MongoDb::class, $this->invoke($command, 'createDbDumperFor', ['mongodb']));
+        $this->assertInstanceOf(MongoDb::class, $this->invoke($step, 'createDbDumperFor', ['mongodb']));
     }
 
     public function test_create_db_dumper_for_rejects_unsupported_driver(): void
     {
-        $command = $this->makePackCommand($this->packConfig());
+        $step = $this->createStep();
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Unsupported driver: oracle');
 
-        $this->invoke($command, 'createDbDumperFor', ['oracle']);
+        $this->invoke($step, 'createDbDumperFor', ['oracle']);
     }
 
     public function test_create_db_dumper_builds_configured_mysql_dumper(): void
     {
-        $command = $this->makePackCommand($this->packConfig());
+        $step = $this->createStep();
 
-        $dumper = $this->invoke($command, 'createDbDumper', [
+        $dumper = $this->invoke($step, 'createDbDumper', [
             [
                 'driver' => 'mysql',
                 'host' => 'localhost',
@@ -95,9 +97,9 @@ class DumpsDatabaseTest extends TestCase
             ],
         ]);
 
-        $command = $this->makePackCommand($this->packConfig());
+        $step = $this->createStep();
 
-        $config = $this->invoke($command, 'getDbConfig', ['mysql']);
+        $config = $this->invoke($step, 'getDbConfig', ['mysql']);
 
         $this->assertSame('127.0.0.1', $config['host']);
         $this->assertSame(3307, $config['port']);
@@ -118,35 +120,46 @@ class DumpsDatabaseTest extends TestCase
             ],
         ]);
 
-        $config = $this->packConfig();
-        $command = $this->wiredPackCommand($config);
+        $config = $this->packConfig([
+            'db_dump.enabled' => true,
+            'db_dump.connections' => [
+                'mysql' => [
+                    'dump_path' => 'database.sql',
+                    'extra_options' => [],
+                ],
+            ],
+        ]);
+        $context = $this->createContext($config);
+
+        $step = \Mockery::mock(DumpsDatabase::class)
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
 
         $dumper = \Mockery::mock(DbDumper::class);
         $dumper->shouldReceive('dumpToFile')
             ->once()
             ->with($this->app->basePath('deploy').'/database.sql');
 
-        $command->shouldReceive('createDbDumper')->once()->andReturn($dumper);
+        $step->shouldReceive('createDbDumper')->once()->andReturn($dumper);
 
-        $this->invoke($command, 'dumpDatabase');
+        $step($context);
     }
 
-    /**
-     * Build a partial mock of the pack command with IO/config wired, so
-     * protected database methods can be overridden and invoked.
-     */
-    protected function wiredPackCommand(PackConfig $config, array $options = []): MockInterface
+    public function test_dump_database_is_skipped_when_disabled(): void
     {
-        $command = \Mockery::mock(PackForSharedHosting::class)
+        $config = $this->packConfig(['db_dump.enabled' => false]);
+        $outputter = new OutputRecorder;
+        $context = $this->createContext($config, outputter: $outputter);
+
+        $step = \Mockery::mock(DumpsDatabase::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
-        $input = new ArrayInput($options);
-        $this->setReflected($command, 'laravel', $this->app);
-        $this->setReflected($command, 'input', $input);
-        $this->setReflected($command, 'output', new OutputStyle($input, new BufferedOutput));
-        $this->invoke($command, 'setConfig', [$config]);
+        $step->shouldNotReceive('dumpDatabaseConnection');
 
-        return $command;
+        $step($context);
+
+        $messages = array_column($outputter->getMessages(), 'message');
+        $this->assertContains('Skipping database dump as per configuration.', $messages);
     }
 }

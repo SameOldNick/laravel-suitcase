@@ -2,17 +2,25 @@
 
 namespace SameOldNick\LaravelSuitcase\Tests\Unit\Commands;
 
+use SameOldNick\LaravelSuitcase\Contracts\PackPipelineStep;
+use SameOldNick\LaravelSuitcase\Runners\Steps\HandlesZipping;
 use SameOldNick\LaravelSuitcase\Tests\TestCase;
 
 /**
- * Unit tests for the `HandlesZipping` concern.
+ * Unit tests for the `HandlesZipping` pipeline step.
  */
 class HandlesZippingTest extends TestCase
 {
+    protected function createStep(): PackPipelineStep
+    {
+        return new HandlesZipping;
+    }
+
     public function test_zip_package_archives_export_contents(): void
     {
         $config = $this->packConfig();
-        $command = $this->makePackCommand($config);
+        $context = $this->createContext($config);
+        $step = $this->createStep();
 
         $exportPath = $config->getExportPath();
         static::removeDirectory($exportPath);
@@ -21,7 +29,7 @@ class HandlesZippingTest extends TestCase
         file_put_contents($exportPath.'/a.txt', 'a');
         file_put_contents($exportPath.'/sub/b.txt', 'b');
 
-        $this->invoke($command, 'zipPackage');
+        $step($context);
 
         $zipPath = $config->getZipPath();
 
@@ -36,21 +44,22 @@ class HandlesZippingTest extends TestCase
     public function test_zip_package_overwrites_existing_archive(): void
     {
         $config = $this->packConfig();
-        $command = $this->makePackCommand($config);
+        $context = $this->createContext($config);
+        $step = $this->createStep();
 
         $exportPath = $config->getExportPath();
         static::removeDirectory($exportPath);
         mkdir($exportPath, 0777, true);
         file_put_contents($exportPath.'/stale.txt', 'stale');
 
-        $this->invoke($command, 'zipPackage');
+        $step($context);
 
         // Change the contents and zip again - the old entry should disappear.
         static::removeDirectory($exportPath);
         mkdir($exportPath, 0777, true);
         file_put_contents($exportPath.'/fresh.txt', 'fresh');
 
-        $this->invoke($command, 'zipPackage');
+        $step($context);
 
         $entries = $this->zipEntries($config->getZipPath());
 

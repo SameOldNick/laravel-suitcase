@@ -1,45 +1,54 @@
 <?php
 
-namespace SameOldNick\LaravelSuitcase\Commands\Concerns;
+namespace SameOldNick\LaravelSuitcase\Runners\Steps;
 
 use Illuminate\Database\ConfigurationUrlParser;
 use Illuminate\Support\Arr;
 use SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting;
+use SameOldNick\LaravelSuitcase\Contracts\PackPipelineStep;
 use SameOldNick\LaravelSuitcase\Extensions\MySqlPHP;
+use SameOldNick\LaravelSuitcase\Runners\PackPipelineContext;
 use Spatie\DbDumper\Databases\MongoDb;
 use Spatie\DbDumper\Databases\MySql;
 use Spatie\DbDumper\Databases\PostgreSql;
 use Spatie\DbDumper\Databases\Sqlite;
 use Spatie\DbDumper\DbDumper;
 
-/**
- * @mixin PackForSharedHosting
- */
-trait DumpsDatabase
+class DumpsDatabase implements PackPipelineStep
 {
     /**
      * Dump the database to a file.
      */
-    protected function dumpDatabase(): void
+    public function __invoke(PackPipelineContext $context): void
     {
-        /**
-         * @var PackForSharedHosting $this
-         */
-        $outputPath = $this->getConfig()->getExportPath();
+        if (! $context->getConfig()->getDbDumpEnabled()) {
+            $context->getOutputter()->info('Skipping database dump as per configuration.');
 
-        $connections = $this->getConfig()->getDbConnections();
+            return;
+        }
+
+        $outputPath = $context->getConfig()->getExportPath();
+
+        $connections = $context->getConfig()->getDbConnections();
 
         foreach ($connections as $connectionName => $connectionConfig) {
-            $this->dumpDatabaseConnection($connectionName, $connectionConfig, $outputPath);
+            $this->dumpDatabaseConnection($context, $connectionName, $connectionConfig, $outputPath);
         }
+
+        $context->getOutputter()->info('Database dump completed.');
+
+        $context->getEventDispatcher()?->dispatch('suitcase.database.dumped', [
+            'connections' => array_keys($connections),
+            'output_path' => $outputPath,
+        ]);
     }
 
     /**
      * Dump the database for a specific connection.
      */
-    protected function dumpDatabaseConnection(string $connectionName, array $connectionConfig, string $outputPath): void
+    protected function dumpDatabaseConnection(PackPipelineContext $context, string $connectionName, array $connectionConfig, string $outputPath): void
     {
-        $this->info("Creating database dump for connection: {$connectionName}...");
+        $context->getOutputter()->info("Creating database dump for connection: {$connectionName}...");
 
         $dbConfig = $this->getDbConfig($connectionName);
         $dumper = $this->createDbDumper($dbConfig, $connectionConfig['extra_options'] ?? []);
@@ -51,7 +60,7 @@ trait DumpsDatabase
 
         $dumper->dumpToFile($dumpFilePath);
 
-        $this->info("Database dump for connection {$connectionName} created at: {$dumpFilePath}");
+        $context->getOutputter()->info("Database dump for connection {$connectionName} created at: {$dumpFilePath}");
     }
 
     /**

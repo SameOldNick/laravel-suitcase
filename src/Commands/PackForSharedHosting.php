@@ -3,24 +3,21 @@
 namespace SameOldNick\LaravelSuitcase\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\File;
 use SameOldNick\LaravelSuitcase\Config\Options;
 use SameOldNick\LaravelSuitcase\Contracts\Config\PackConfig;
 use SameOldNick\LaravelSuitcase\Contracts\EnvVariables;
+use SameOldNick\LaravelSuitcase\Contracts\Outputter;
+use SameOldNick\LaravelSuitcase\Runners\PackForSharedHostingRunner;
 use SameOldNick\LaravelSuitcase\Support\EventDispatcher;
+use SameOldNick\LaravelSuitcase\Support\Outputters\ConsoleOutputter;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Command to package a Laravel application for deployment on shared hosting.
  */
 class PackForSharedHosting extends Command
 {
-    use Concerns\DumpsDatabase;
-    use Concerns\HandlesFileExport;
-    use Concerns\HandlesZipping;
-    use Concerns\HasConfig;
-    use Concerns\PreparesDirectories;
-    use Concerns\PreparesFiles;
-
     /**
      * The name and signature of the console command.
      *
@@ -38,14 +35,34 @@ class PackForSharedHosting extends Command
     protected $description = 'Package Laravel app for deployment to shared hosting (e.g., cPanel)';
 
     /**
+     * Map the console skip options onto the package configuration.
+     *
+     * The pipeline steps read these values from `PackConfig`, so the options
+     * must be applied before the config (and its `Options` value object) is
+     * resolved for `handle()`.
+     */
+    protected function initialize(InputInterface $input, OutputInterface $output): void
+    {
+        parent::initialize($input, $output);
+
+        // Only override the config defaults when a flag is actually passed, so
+        // the SKIP_ENV / SKIP_VENDOR environment defaults are preserved.
+        if ($this->option('skip-env')) {
+            config(['suitcase.skip.env' => true]);
+        }
+
+        if ($this->option('skip-vendor')) {
+            config(['suitcase.skip.vendor' => true]);
+        }
+    }
+
+    /**
      * Execute the console command.
      *
      * @return int
      */
     public function handle(PackConfig $config, EnvVariables $envVariables)
     {
-        $eventDispatcher = new EventDispatcher($this, $config);
-
         $this->info('🔧 Laravel Suitcase');
         $this->info('Welcome to the Laravel Shared Hosting Packer!');
         $this->info('This command will help you prepare your Laravel application for deployment on shared hosting.');
@@ -55,7 +72,7 @@ class PackForSharedHosting extends Command
         $this->info('You can find the config file at: '.config_path(Options::CONFIG_ROOT_KEY.'.php'));
         $this->newLine();
 
-        if (! $this->setConfig($config)->validateConfig()) {
+        if (! $this->validateConfig($config)) {
             return 1;
         }
 
@@ -78,56 +95,41 @@ class PackForSharedHosting extends Command
             return;
         }
 
-        $this->info('Preparing app for shared hosting...');
-        $eventDispatcher->dispatch('suitcase.preparing');
+        $eventDispatcher = new EventDispatcher($config);
+        $outputter = new ConsoleOutputter($this->output);
 
-        // Create the ZIP file if it doesn't exist
-        if (File::put($this->getConfig()->getZipPath(), '') === false) {
-            $this->error("The ZIP file is not writable: {$this->getConfig()->getZipPath()}");
+        $runner = $this->createRunner($outputter, $envVariables, $eventDispatcher);
 
-            return 1;
-        }
-
-        $this->prepareExportDirectories();
-        $eventDispatcher->dispatch('suitcase.directories.prepared');
-
-        if ($config->getDbDumpEnabled()) {
-            $this->dumpDatabase();
-            $eventDispatcher->dispatch('suitcase.database.dumped');
-        }
-
-        $this->exportFiles();
-        $eventDispatcher->dispatch('suitcase.files.exported');
-
-        // Update index.php to point to the correct Laravel directory
-        $this->updateConstantsFile("{$config->getPublicPath()}/constants.php");
-
-        if (! $this->option('skip-env')) {
-            // Update .env file for shared hosting
-            $destinationEnvFilePath = "{$config->getLaravelPath()}/.env";
-            $this->updateEnvFile($destinationEnvFilePath, $envVariables->getCustomizedVariables());
-
-            $eventDispatcher->dispatch('suitcase.env.updated', [
-                'envFilePath' => $destinationEnvFilePath,
-                'envVariables' => $envVariables->getCustomizedVariables(),
-            ]);
-        }
-
-        $this->createInstallFile();
-        $eventDispatcher->dispatch('suitcase.install.file.created');
-
-        $this->zipPackage();
-        $eventDispatcher->dispatch('suitcase.zipped');
-
-        $this->newLine();
-        $this->info('✅ Package created successfully: '.$this->getConfig()->getZipPath());
-
-        $eventDispatcher->dispatch('suitcase.completed');
-
-        $this->info('To deploy your app, follow the instructions in the INSTALL.txt file.');
-
-        $this->newLine();
+        $runner->run($config);
 
         return 0;
+    }
+
+    /**
+     * Validate the configuration.
+     */
+    protected function validateConfig(PackConfig $config): bool
+    {
+        try {
+            $config->validate();
+        } catch (\InvalidArgumentException $e) {
+            $this->error('Configuration error: '.$e->getMessage());
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Create the packer runner.
+     */
+    protected function createRunner(Outputter $outputter, EnvVariables $envVariables, EventDispatcher $eventDispatcher): PackForSharedHostingRunner
+    {
+        return new PackForSharedHostingRunner(
+            outputter: $outputter,
+            envVariables: $envVariables,
+            eventDispatcher: $eventDispatcher
+        );
     }
 }

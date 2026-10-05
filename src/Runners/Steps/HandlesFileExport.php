@@ -1,38 +1,39 @@
 <?php
 
-namespace SameOldNick\LaravelSuitcase\Commands\Concerns;
+namespace SameOldNick\LaravelSuitcase\Runners\Steps;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting;
+use SameOldNick\LaravelSuitcase\Contracts\PackPipelineStep;
+use SameOldNick\LaravelSuitcase\Runners\PackPipelineContext;
 
-/**
- * @mixin PackForSharedHosting
- */
-trait HandlesFileExport
+class HandlesFileExport implements PackPipelineStep
 {
     /**
-     * Expores files to the export directory.
+     * Handles the file export process.
      */
-    protected function exportFiles(): void
+    public function __invoke(PackPipelineContext $context): void
     {
-        /**
-         * @var PackForSharedHosting $this
-         */
-        $this->info('Exporting files...');
+        $context->getOutputter()->info('Exporting files...');
 
         $basePath = base_path();
 
         // Public directory
-        $this->exportPublicDirectory($basePath.'/public');
+        $this->exportPublicDirectory($context, $basePath.'/public');
 
         // Laravel core
-        $this->exportLaravelDirectory($basePath);
+        $this->exportLaravelDirectory($context, $basePath);
 
-        $this->newLine();
+        $context->getOutputter()->newLine();
 
         // Create additional files
-        $this->exportAdditionalFiles();
+        $this->exportAdditionalFiles($context);
+
+        $context->getOutputter()->info('File export completed.');
+
+        $context->getEventDispatcher()?->dispatch('suitcase.files.exported', [
+            'export_path' => $context->getConfig()->getExportPath(),
+        ]);
     }
 
     /**
@@ -41,16 +42,13 @@ trait HandlesFileExport
      * @param  string  $source  Source directory path
      * @return void
      */
-    protected function exportPublicDirectory(string $source)
+    protected function exportPublicDirectory(PackPipelineContext $context, string $source)
     {
-        /**
-         * @var PackForSharedHosting $this
-         */
-        $this->info('Exporting public directory...');
+        $context->getOutputter()->info('Exporting public directory...');
 
-        $this->copyDirectory($source, $this->getConfig()->getPublicPath(), $this->cleanList($this->getConfig()->getPublicIncludes()), $this->cleanList($this->getConfig()->getPublicExcludes()));
+        $this->copyDirectory($context, $source, $context->getConfig()->getPublicPath(), $this->cleanList($context->getConfig()->getPublicIncludes()), $this->cleanList($context->getConfig()->getPublicExcludes()));
 
-        $this->info('Exported public directory successfully.');
+        $context->getOutputter()->info('Exported public directory successfully.');
     }
 
     /**
@@ -59,23 +57,20 @@ trait HandlesFileExport
      * @param  string  $source  Source directory path
      * @return void
      */
-    protected function exportLaravelDirectory(string $source)
+    protected function exportLaravelDirectory(PackPipelineContext $context, string $source)
     {
-        /**
-         * @var PackForSharedHosting $this
-         */
-        $this->info('Exporting Laravel core directory...');
+        $context->getOutputter()->info('Exporting Laravel core directory...');
 
-        $includes = $this->cleanList($this->getConfig()->getLaravelIncludes());
-        $excludes = $this->cleanList($this->getConfig()->getLaravelExcludes());
+        $includes = $this->cleanList($context->getConfig()->getLaravelIncludes());
+        $excludes = $this->cleanList($context->getConfig()->getLaravelExcludes());
 
-        if ($this->option('skip-vendor')) {
+        if ($context->getConfig()->shouldSkipVendor()) {
             $excludes[] = 'vendor/*';
         }
 
-        $this->copyDirectory($source, $this->getConfig()->getLaravelPath(), $includes, $excludes);
+        $this->copyDirectory($context, $source, $context->getConfig()->getLaravelPath(), $includes, $excludes);
 
-        $this->info('Exported Laravel core directory successfully.');
+        $context->getOutputter()->info('Exported Laravel core directory successfully.');
     }
 
     /**
@@ -83,29 +78,26 @@ trait HandlesFileExport
      *
      * @return void
      */
-    protected function exportAdditionalFiles()
+    protected function exportAdditionalFiles(PackPipelineContext $context)
     {
-        /**
-         * @var PackForSharedHosting $this
-         */
-        $publicPath = $this->getConfig()->getPublicPath();
-        $laravelPath = $this->getConfig()->getLaravelPath();
+        $publicPath = $context->getConfig()->getPublicPath();
+        $laravelPath = $context->getConfig()->getLaravelPath();
 
         $files = [
-            [$this->getConfig()->getConstantsStubPath(), "$publicPath/constants.php"],
-            [$this->getConfig()->getIndexStubPath(), "$publicPath/index.php"],
+            [$context->getConfig()->getConstantsStubPath(), "$publicPath/constants.php"],
+            [$context->getConfig()->getIndexStubPath(), "$publicPath/index.php"],
         ];
 
-        if (! $this->option('skip-env')) {
-            $files[] = [$this->getConfig()->getEnvFilePath(), "$laravelPath/.env"];
+        if (! $context->getConfig()->shouldSkipEnv()) {
+            $files[] = [$context->getConfig()->getEnvFilePath(), "$laravelPath/.env"];
         }
 
-        $this->info('Exporting additional files...');
+        $context->getOutputter()->info('Exporting additional files...');
 
-        $bar = $this->output->createProgressBar(count($files));
+        $bar = $context->getOutputter()->createProgressBar(count($files));
 
-        $bar->setFormat('verbose');
-        $bar->start();
+        $bar?->setFormat('verbose');
+        $bar?->start();
 
         foreach ($files as [$source, $destination]) {
             if (! File::exists($source)) {
@@ -115,18 +107,18 @@ trait HandlesFileExport
             $filename = basename($destination);
 
             if (File::copy($source, $destination)) {
-                $bar->setMessage("Exported {$filename} file successfully.");
+                $bar?->setMessage("Exported {$filename} file successfully.");
             } else {
-                $bar->setMessage("Failed to export {$filename} file.");
+                $bar?->setMessage("Failed to export {$filename} file.");
             }
 
-            $bar->advance();
+            $bar?->advance();
         }
 
-        $bar->finish();
-        $this->newLine();
+        $bar?->finish();
+        $context->getOutputter()->newLine();
 
-        $this->info('Exported additional files successfully.');
+        $context->getOutputter()->info('Exported additional files successfully.');
     }
 
     /**
@@ -136,16 +128,13 @@ trait HandlesFileExport
      * @param  callable  $callback  Callback function to execute for each file or directory
      * @param  bool  $ignoreLinks  Whether to ignore symbolic links
      */
-    protected function recurseDirectory(string $directory, callable $callback, bool $ignoreLinks = true): void
+    protected function recurseDirectory(PackPipelineContext $context, string $directory, callable $callback, bool $ignoreLinks = true): void
     {
-        /**
-         * @var PackForSharedHosting $this
-         */
         $source = $this->normalizePath(realpath($directory));
         $items = scandir($source);
 
         if ($items === false) {
-            $this->output->error("Failed to read directory: {$source}");
+            $context->getOutputter()->error("Failed to read directory: {$source}");
 
             return;
         }
@@ -158,7 +147,7 @@ trait HandlesFileExport
             $fullPath = $this->normalizePath("$source/$item");
 
             if ($ignoreLinks && is_link($fullPath)) {
-                $this->output->warning("Skipping symlink: {$fullPath}");
+                $context->getOutputter()->warning("Skipping symlink: {$fullPath}");
 
                 continue;
             }
@@ -166,7 +155,7 @@ trait HandlesFileExport
             if (is_dir($fullPath)) {
                 $callback($item, $fullPath);
 
-                $this->recurseDirectory($fullPath, $callback, $ignoreLinks);
+                $this->recurseDirectory($context, $fullPath, $callback, $ignoreLinks);
             } elseif (is_file($fullPath)) {
                 $callback($item, $fullPath);
             }
@@ -181,11 +170,8 @@ trait HandlesFileExport
      * @param  array  $includes  List of files to include (empty means all)
      * @param  array  $excludes  List of files to exclude (empty means none)
      */
-    protected function copyDirectory(string $source, string $destination, array $includes, array $excludes): void
+    protected function copyDirectory(PackPipelineContext $context, string $source, string $destination, array $includes, array $excludes): void
     {
-        /**
-         * @var PackForSharedHosting $this
-         */
         $source = $this->normalizePath(realpath($source));
         $destination = $this->normalizePath($destination);
 
@@ -193,13 +179,13 @@ trait HandlesFileExport
             File::makeDirectory($destination, 0755, true);
         }
 
-        $bar = $this->output->createProgressBar();
+        $bar = $context->getOutputter()->createProgressBar();
 
-        $bar->setFormat('verbose');
-        $bar->start();
+        $bar?->setFormat('verbose');
+        $bar?->start();
 
-        $this->recurseDirectory($source, function ($item, $itemPath) use ($source, $destination, $includes, $excludes, $bar) {
-            $bar->advance();
+        $this->recurseDirectory($context, $source, function ($item, $itemPath) use ($source, $destination, $includes, $excludes, $bar) {
+            $bar?->advance();
 
             $sourchPathRelative = sprintf('%s%s', str_replace($source.'/', '', $itemPath), File::isDirectory($itemPath) ? '/' : '');
 
@@ -208,13 +194,13 @@ trait HandlesFileExport
             $excluded = ! empty($excludes) && $this->filesInList($excludes, $sourchPathRelative);
 
             if (! $included) {
-                $bar->setMessage("Skipping file or directory not in includes list: {$itemPath}");
+                $bar?->setMessage("Skipping file or directory not in includes list: {$itemPath}");
 
                 return;
             }
 
             if ($excluded) {
-                $bar->setMessage("Skipping excluded file or directory: {$itemPath}");
+                $bar?->setMessage("Skipping excluded file or directory: {$itemPath}");
 
                 return;
             }
@@ -222,21 +208,21 @@ trait HandlesFileExport
             $destinationPath = $this->normalizePath($destination.'/'.$sourchPathRelative);
 
             if (is_dir($itemPath)) {
-                $bar->setMessage("Creating directory: {$destinationPath}");
+                $bar?->setMessage("Creating directory: {$destinationPath}");
                 File::ensureDirectoryExists($destinationPath, 0755, true);
             } elseif (is_file($itemPath)) {
-                $bar->setMessage("Copying file: {$destinationPath}");
+                $bar?->setMessage("Copying file: {$destinationPath}");
 
                 if (File::copy($itemPath, $destinationPath)) {
-                    $bar->setMessage("Copied file successfully: {$destinationPath}");
+                    $bar?->setMessage("Copied file successfully: {$destinationPath}");
                 } else {
-                    $bar->setMessage("Failed to copy file: {$destinationPath}");
+                    $bar?->setMessage("Failed to copy file: {$destinationPath}");
                 }
             }
         });
 
-        $bar->finish();
-        $this->newLine();
+        $bar?->finish();
+        $context->getOutputter()->newLine();
     }
 
     /**
