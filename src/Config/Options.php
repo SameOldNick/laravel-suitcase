@@ -2,8 +2,8 @@
 
 namespace SameOldNick\LaravelSuitcase\Config;
 
+use Illuminate\Container\Attributes\Config;
 use SameOldNick\LaravelSuitcase\Contracts\Config\Options as OptionsContract;
-use SameOldNick\LaravelSuitcase\Contracts\Config\Repository;
 
 class Options implements OptionsContract
 {
@@ -15,8 +15,40 @@ class Options implements OptionsContract
 
     public const CONSTANTS_STUB = __DIR__.'/../../stubs/constants.php.stub';
 
+    /**
+     * Constructs Options instance
+     */
     public function __construct(
-        protected readonly Repository $repository,
+        #[Config('suitcase.remote.laravel_path', self::DEFAULT_REMOTE_LARAVEL)]
+        protected readonly string $remoteLaravelPath,
+        #[Config('suitcase.remote.public_path', self::DEFAULT_REMOTE_PUBLIC)]
+        protected readonly string $remotePublicPath,
+        #[Config('suitcase.export_dir', '')]
+        protected readonly string $exportPath,
+        #[Config('suitcase.zip_name', '')]
+        protected readonly string $zipPath,
+        #[Config('suitcase.env_file', '')]
+        protected readonly string $envFilePath,
+        #[Config('suitcase.db_dump.enabled', false)]
+        protected readonly bool $dbDumpEnabled,
+        #[Config('suitcase.db_dump.connections', [])]
+        protected readonly array $dbConnections,
+        #[Config('suitcase.root_files', [])]
+        protected readonly array $rootFiles,
+        #[Config('suitcase.include.laravel', [])]
+        protected readonly array $laravelIncludes,
+        #[Config('suitcase.include.public', [])]
+        protected readonly array $publicIncludes,
+        #[Config('suitcase.exclude.laravel', [])]
+        protected readonly array $laravelExcludes,
+        #[Config('suitcase.exclude.public', [])]
+        protected readonly array $publicExcludes,
+        #[Config('suitcase.stubs.index', self::INDEX_STUB)]
+        protected readonly string $indexStub,
+        #[Config('suitcase.stubs.constants', self::CONSTANTS_STUB)]
+        protected readonly string $constantsStub,
+        protected readonly ?string $publicPath = null,
+        protected readonly ?string $laravelPath = null,
     ) {
         //
     }
@@ -28,7 +60,7 @@ class Options implements OptionsContract
      */
     public function getIndexStubPath(): string
     {
-        return static::INDEX_STUB;
+        return $this->indexStub;
     }
 
     /**
@@ -36,7 +68,7 @@ class Options implements OptionsContract
      */
     public function getConstantsStubPath(): string
     {
-        return static::CONSTANTS_STUB;
+        return $this->constantsStub;
     }
 
     /**
@@ -44,7 +76,7 @@ class Options implements OptionsContract
      */
     public function getRemoteLaravelPath(): string
     {
-        return $this->repository->getOption('remote.laravel_path', static::DEFAULT_REMOTE_LARAVEL);
+        return $this->remoteLaravelPath;
     }
 
     /**
@@ -52,7 +84,7 @@ class Options implements OptionsContract
      */
     public function getRemotePublicPath(): string
     {
-        return $this->repository->getOption('remote.public_path', static::DEFAULT_REMOTE_PUBLIC);
+        return $this->remotePublicPath;
     }
 
     /**
@@ -60,7 +92,7 @@ class Options implements OptionsContract
      */
     public function getExportPath(): string
     {
-        return base_path($this->repository->getOption('export_dir'));
+        return $this->exportPath;
     }
 
     /**
@@ -68,7 +100,7 @@ class Options implements OptionsContract
      */
     public function getPublicPath(): string
     {
-        return $this->getExportPath().'/public_html';
+        return $this->publicPath ?? $this->getExportPath().'/public_html';
     }
 
     /**
@@ -76,7 +108,7 @@ class Options implements OptionsContract
      */
     public function getLaravelPath(): string
     {
-        return $this->getExportPath().'/laravel';
+        return $this->laravelPath ?? $this->getExportPath().'/laravel';
     }
 
     /**
@@ -84,7 +116,7 @@ class Options implements OptionsContract
      */
     public function getZipPath(): string
     {
-        return base_path($this->repository->getOption('zip_name'));
+        return $this->zipPath;
     }
 
     /**
@@ -92,7 +124,7 @@ class Options implements OptionsContract
      */
     public function getEnvFilePath(): string
     {
-        return base_path($this->repository->getOption('env_file'));
+        return $this->envFilePath;
     }
 
     // === Database Export Options ===
@@ -102,7 +134,7 @@ class Options implements OptionsContract
      */
     public function getDbDumpEnabled(): bool
     {
-        return $this->repository->getOption('db_dump.enabled', false);
+        return $this->dbDumpEnabled;
     }
 
     /**
@@ -110,7 +142,7 @@ class Options implements OptionsContract
      */
     public function getDbConnections(): array
     {
-        return $this->repository->getOption('db_dump.connections', []);
+        return $this->dbConnections;
     }
 
     // === File Inclusion/Exclusion ===
@@ -120,7 +152,7 @@ class Options implements OptionsContract
      */
     public function getRootFiles(): array
     {
-        return $this->repository->getOption('root_files', []);
+        return $this->rootFiles;
     }
 
     /**
@@ -128,7 +160,7 @@ class Options implements OptionsContract
      */
     public function getLaravelIncludes(): array
     {
-        return $this->repository->getOption('include.laravel', []);
+        return $this->laravelIncludes;
     }
 
     /**
@@ -136,7 +168,7 @@ class Options implements OptionsContract
      */
     public function getPublicIncludes(): array
     {
-        return $this->repository->getOption('include.public', []);
+        return $this->publicIncludes;
     }
 
     /**
@@ -144,7 +176,7 @@ class Options implements OptionsContract
      */
     public function getLaravelExcludes(): array
     {
-        return $this->repository->getOption('exclude.laravel', []);
+        return $this->laravelExcludes;
     }
 
     /**
@@ -152,6 +184,6 @@ class Options implements OptionsContract
      */
     public function getPublicExcludes(): array
     {
-        return $this->repository->getOption('exclude.public', []);
+        return $this->publicExcludes;
     }
 }
