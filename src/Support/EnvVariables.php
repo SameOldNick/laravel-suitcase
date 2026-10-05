@@ -7,6 +7,11 @@ use SameOldNick\LaravelSuitcase\Contracts\EnvVariables as EnvVariablesContract;
 
 class EnvVariables implements EnvVariablesContract
 {
+    /**
+     * Get the default environment variables for the packaging process.
+     *
+     * @return array The default environment variables.
+     */
     public function getDefaultVariables(): array
     {
         return [
@@ -17,6 +22,9 @@ class EnvVariables implements EnvVariablesContract
         ];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getCustomizedVariables(): array
     {
         $variables = $this->getDefaultVariables();
