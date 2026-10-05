@@ -5,6 +5,8 @@ namespace SameOldNick\LaravelSuitcase\Runners\Steps;
 use Illuminate\Support\Facades\File;
 use SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting;
 use SameOldNick\LaravelSuitcase\Contracts\PackPipelineStep;
+use SameOldNick\LaravelSuitcase\Exceptions\ExportDirectoryNotCreated;
+use SameOldNick\LaravelSuitcase\Exceptions\ExportDirectoryNotDeleted;
 use SameOldNick\LaravelSuitcase\Runners\PackPipelineContext;
 
 /**
@@ -48,13 +50,13 @@ class PreparesDirectories implements PackPipelineStep
         if (File::deleteDirectory($path)) {
             $context->getOutputter()->info("Deleted existing export directory: $path.");
         } else {
-            $context->getOutputter()->error("Failed to delete existing export directory: $path.");
+            throw new ExportDirectoryNotDeleted($path);
         }
 
         if (File::makeDirectory($path, 0755, true)) {
             $context->getOutputter()->info("Export directory created successfully: $path.");
         } else {
-            $context->getOutputter()->error("Failed to create export directory: $path.");
+            throw new ExportDirectoryNotCreated($path);
         }
 
         $this->createGitIgnoreFile($context, $path);

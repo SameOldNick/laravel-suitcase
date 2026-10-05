@@ -5,6 +5,7 @@ namespace SameOldNick\LaravelSuitcase\Runners\Steps;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SameOldNick\LaravelSuitcase\Contracts\PackPipelineStep;
+use SameOldNick\LaravelSuitcase\Exceptions\ZipFileNotCreated;
 use SameOldNick\LaravelSuitcase\Runners\PackPipelineContext;
 use ZipArchive;
 
@@ -21,9 +22,7 @@ class HandlesZipping implements PackPipelineStep
         $zip = new ZipArchive;
 
         if (! $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE)) {
-            $context->getOutputter()->error('Failed to create zip file: '.$zipPath);
-
-            return;
+            throw new ZipFileNotCreated($zipPath);
         }
 
         $context->getOutputter()->info('Zipping files...');
