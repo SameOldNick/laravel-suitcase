@@ -4,7 +4,7 @@ namespace SameOldNick\LaravelSuitcase\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use SameOldNick\LaravelSuitcase\Config\Repositories\ConfigRepository;
+use SameOldNick\LaravelSuitcase\Config\Options;
 use SameOldNick\LaravelSuitcase\Contracts\Config\PackConfig;
 use SameOldNick\LaravelSuitcase\Contracts\EnvVariables;
 use SameOldNick\LaravelSuitcase\Support\EventDispatcher;
@@ -52,7 +52,7 @@ class PackForSharedHosting extends Command
         $this->newLine();
 
         $this->info('Please ensure the config file is set up correctly.');
-        $this->info('You can find the config file at: '.config_path(ConfigRepository::getConfigRootKey().'.php'));
+        $this->info('You can find the config file at: '.config_path(Options::CONFIG_ROOT_KEY.'.php'));
         $this->newLine();
 
         if (! $this->setConfig($config)->validateConfig()) {

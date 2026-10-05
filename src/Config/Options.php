@@ -7,6 +7,8 @@ use SameOldNick\LaravelSuitcase\Contracts\Config\Options as OptionsContract;
 
 class Options implements OptionsContract
 {
+    public const CONFIG_ROOT_KEY = 'suitcase';
+
     public const DEFAULT_REMOTE_LARAVEL = '/home/username/laravel';
 
     public const DEFAULT_REMOTE_PUBLIC = '/home/username/public_html';
@@ -92,7 +94,7 @@ class Options implements OptionsContract
      */
     public function getExportPath(): string
     {
-        return $this->exportPath;
+        return base_path($this->exportPath);
     }
 
     /**
@@ -116,7 +118,7 @@ class Options implements OptionsContract
      */
     public function getZipPath(): string
     {
-        return $this->zipPath;
+        return base_path($this->zipPath);
     }
 
     /**
@@ -124,7 +126,7 @@ class Options implements OptionsContract
      */
     public function getEnvFilePath(): string
     {
-        return $this->envFilePath;
+        return base_path($this->envFilePath);
     }
 
     // === Database Export Options ===
