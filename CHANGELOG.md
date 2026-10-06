@@ -5,6 +5,36 @@ All notable changes to Laravel Suitcase are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-10-05
+
+### Added
+
+- Alternate config file selection for `suitcase:pack`: `--config=<path>` or the `SUITCASE_CONFIG` environment variable. The flag wins over the environment variable, and with neither present the command still uses `config/suitcase.php` over the packaged defaults.
+- Config file profiles: a bare name (`--config=production`) resolves to `config/suitcase.<name>.php`, relative paths resolve against `base_path()`, and absolute paths are used unchanged.
+- Partial config files: the selected file is merged over the packaged defaults, so only the keys that are set are overridden.
+- The startup banner now lists every config path that was checked and marks the file in use.
+- `export.public_path` and `export.laravel_path` config options (also settable with the `EXPORT_PUBLIC_PATH` and `EXPORT_LARAVEL_PATH` environment variables) to control where the package is written locally.
+- `skip.env` and `skip.vendor` config options (also settable with the `SKIP_ENV` and `SKIP_VENDOR` environment variables), so `.env` and `vendor/` can be skipped without passing `--skip-env` or `--skip-vendor`.
+- Configurable stub paths via the `stubs.index` and `stubs.constants` options.
+- Dedicated exceptions (`ExportDirectoryNotCreated`, `ExportDirectoryNotDeleted`, `ZipFileNotCreated`, `ZipFileNotWritable`) with clearer messages when preparing directories or writing the ZIP fails.
+- Laravel Boost guidelines (`resources/boost/guidelines/core.blade.php`) and a `suitcase-deployment` skill (`resources/boost/skills/suitcase-deployment/SKILL.md`).
+- README documentation for configuration profiles, covering selection, path resolution, merge semantics, and the checked-paths banner.
+
+### Changed
+
+- Packaging moved out of the command into `PackForSharedHostingRunner`, which runs a Laravel pipeline of single-purpose steps (`PreparesZipFile`, `PreparesDirectories`, `DumpsDatabase`, `HandlesFileExport`, `PreparesFiles`, `HandlesZipping`); console output now goes through the new `Contracts\Outputter` and `ConsoleOutputter`.
+- Configuration is now read through constructor attributes in `Options`. The `Contracts\Config\Repository` contract, its `ConfigRepository` implementation, and the `Contracts\Config\PackConfig` contract were removed, and `ValidatesConfig::validate()` type-hints the concrete `Config\PackConfig`.
+- Merging the published `config/suitcase.php` over the packaged defaults is now recursive: nested maps merge key-by-key while list-valued options (`include.*`, `exclude.*`, `extra_options`) are replaced rather than appended, so a partial config file no longer drops sibling defaults.
+- Lifecycle events no longer include the `command` key in their payload; `config` is still provided.
+
+### Fixed
+
+- A missing, unreadable, non-array-returning, or directory config file now fails before any export work, exits non-zero, and names the resolved absolute path, instead of terminating the process with `exit(1)`.
+- `suitcase:pack` no longer aborts with "The export directory was not deleted" when the export directory does not exist yet.
+- A `SUITCASE_CONFIG` value pointing at a missing file now fails instead of silently falling back to `config/suitcase.php`.
+- The config file in use — the selected alternate, or the app's own `config/suitcase.php` — is no longer copied into the export or the ZIP.
+- `--skip-env` and `--skip-vendor` no longer discard a config file loaded through `--config`.
+
 ## [1.1.1] - 2026-09-21
 
 ### Fixed
