@@ -41,6 +41,11 @@ Laravel Suitcase helps you package your Laravel app for deployment on shared hos
     - [Additional Configuration](#additional-configuration)
   - [Preparation](#preparation)
   - [Package the Laravel App](#package-the-laravel-app)
+- [Configuration Profiles](#configuration-profiles)
+  - [Selecting a Config File](#selecting-a-config-file)
+  - [Path Resolution](#path-resolution)
+  - [Merge Semantics](#merge-semantics)
+  - [What the Command Reports](#what-the-command-reports)
 - [Troubleshooting](#troubleshooting)
 
 ## Limitations
@@ -86,6 +91,8 @@ php artisan vendor:publish --tag=suitcase-env
 ### 3. Update the Config File
 
 Open `config/suitcase.php` and update it to match your shared hosting setup. At a minimum, set the `remote.laravel_path` and `remote.public_path` options to the paths on your shared hosting server. You can also customize the `export_dir`, `zip_name`, and `env_file` options as needed.
+
+> **Tip:** To target several hosts without editing this file between runs, see [Configuration Profiles](#configuration-profiles).
 
 > **Note:** On DirectAdmin and cPanel, server paths usually start with `/home/username` (for example, `/home/username/laravel` and `/home/username/public_html`).
 
@@ -165,6 +172,71 @@ php artisan suitcase:pack
 ```
 
 Packaging may take several minutes. A ZIP file will be created in the root folder of your Laravel app. Follow the instructions in the `INSTALL.txt` file (inside the ZIP) to deploy to shared hosting.
+
+## Configuration Profiles
+
+By default, `suitcase:pack` uses your published `config/suitcase.php`, merged over the packaged defaults. If you deploy the same app to more than one host (for example production and staging), keep each target in its own file and select it at run time instead of editing `config/suitcase.php` between runs.
+
+### Selecting a Config File
+
+```bash
+# Relative to the app's base path
+php artisan suitcase:pack --config=config/suitcase.production.php
+
+# Profile shorthand for config/suitcase.production.php
+php artisan suitcase:pack --config=production
+
+# Absolute path, used as-is
+php artisan suitcase:pack --config=/etc/suitcase/production.php
+
+# Via the environment variable
+SUITCASE_CONFIG=config/suitcase.staging.php php artisan suitcase:pack
+```
+
+The `--config` flag always wins over `SUITCASE_CONFIG`. When neither is given, behavior is unchanged: `config/suitcase.php` over the packaged defaults.
+
+### Path Resolution
+
+| You pass | It resolves to |
+| --- | --- |
+| An absolute path | Used unchanged |
+| A path with a directory separator or a `.php` suffix | Resolved against `base_path()` |
+| A bare name such as `production` | `config/suitcase.<name>.php` |
+
+The value you type is tried as-is first, then the rules above are applied; the banner reports every path that was checked (see [What the Command Reports](#what-the-command-reports)).
+
+### Merge Semantics
+
+The selected file is merged over the packaged defaults, so a partial file stays valid: only the keys you set are overridden, and everything else keeps its default.
+
+- **Associative maps merge key-by-key.** Setting `remote.laravel_path` leaves `remote.public_path` at its default.
+- **List options are replaced wholesale, not appended.** Setting `include.laravel`, `exclude.public`, or `db_dump.connections.mysql.extra_options` replaces the entire list, so include every entry you need.
+
+```php
+// config/suitcase.production.php — only override what differs.
+return [
+    'remote' => [
+        'laravel_path' => '/home/username/laravel',
+        'public_path' => '/home/username/public_html',
+    ],
+];
+```
+
+### What the Command Reports
+
+Before doing any work, the command lists the config paths it checked and marks the one in use. For `php artisan suitcase:pack --config=production`:
+
+```
+Config file paths checked:
+  ❌ /home/username/app/config/suitcase.php
+  ❌ production
+  ❌ /home/username/app/production
+  ✅ /home/username/app/config/suitcase.production.php (in use)
+```
+
+A missing, unreadable, or non-array-returning config file aborts before any packaging, exits non-zero, and the error names the resolved absolute path.
+
+> **Note:** The selected config file is never copied into the export or the ZIP, so it is safe to keep host paths and credentials in a profile. Config files are PHP and are `require`d, so only pass paths you trust.
 
 ## Troubleshooting
 
