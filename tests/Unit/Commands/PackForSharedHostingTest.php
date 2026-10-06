@@ -19,6 +19,22 @@ class PackForSharedHostingTest extends TestCase
         $this->assertTrue($this->invoke($command, 'validateConfig', [$config]));
     }
 
+    public function test_validate_config_returns_true_when_env_file_missing_and_skip_env_is_true(): void
+    {
+        $this->givenSharedEnvFile();
+
+        // Point env_file at a path that does not exist.
+        config([
+            'suitcase.skip.env' => true,
+            'suitcase.env_file' => 'missing/shared.env',
+        ]);
+
+        $config = $this->packConfig();
+        $command = $this->makePackCommand();
+
+        $this->assertTrue($this->invoke($command, 'validateConfig', [$config]));
+    }
+
     public function test_validate_config_returns_false_and_reports_error_when_env_missing(): void
     {
         // Intentionally no .env.shared file (a previous test may have created one).
