@@ -5,7 +5,7 @@ namespace SameOldNick\LaravelSuitcase\Tests;
 use Illuminate\Console\OutputStyle;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use SameOldNick\LaravelSuitcase\Commands\PackForSharedHosting;
-use SameOldNick\LaravelSuitcase\Contracts\Config\PackConfig;
+use SameOldNick\LaravelSuitcase\Config\PackConfig;
 use SameOldNick\LaravelSuitcase\Contracts\EnvVariables;
 use SameOldNick\LaravelSuitcase\Contracts\Outputter;
 use SameOldNick\LaravelSuitcase\Runners\PackPipelineContext;

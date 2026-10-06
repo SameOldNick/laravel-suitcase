@@ -22,7 +22,6 @@ class TestServiceProvider extends BaseServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../../config/suitcase.php', 'suitcase');
 
         $this->app->bind(Contracts\EnvVariables::class, Support\EnvVariables::class);
-        $this->app->bind(Contracts\Config\PackConfig::class, Config\PackConfig::class);
         $this->app->bind(Contracts\Config\Options::class, Config\Options::class);
         $this->app->bind(Contracts\Config\ValidatesConfig::class, Config\Validators\DefaultValidator::class);
     }

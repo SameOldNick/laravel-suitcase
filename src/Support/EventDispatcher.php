@@ -3,7 +3,7 @@
 namespace SameOldNick\LaravelSuitcase\Support;
 
 use Illuminate\Support\Facades\Event;
-use SameOldNick\LaravelSuitcase\Contracts\Config\PackConfig;
+use SameOldNick\LaravelSuitcase\Config\PackConfig;
 
 class EventDispatcher
 {

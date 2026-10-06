@@ -3,7 +3,7 @@
 namespace SameOldNick\LaravelSuitcase\Config\Validators;
 
 use Illuminate\Support\Facades\File;
-use SameOldNick\LaravelSuitcase\Contracts\Config\PackConfig as PackConfigContract;
+use SameOldNick\LaravelSuitcase\Config\PackConfig;
 use SameOldNick\LaravelSuitcase\Contracts\Config\ValidatesConfig;
 
 class DefaultValidator implements ValidatesConfig
@@ -11,7 +11,7 @@ class DefaultValidator implements ValidatesConfig
     /**
      * {@inheritDoc}
      */
-    public function validate(PackConfigContract $packConfig): void
+    public function validate(PackConfig $packConfig): void
     {
         if (empty($packConfig->getExportPath())) {
             throw new \InvalidArgumentException('Export directory is not set in the configuration.');

@@ -3,7 +3,7 @@
 namespace SameOldNick\LaravelSuitcase\Runners;
 
 use Illuminate\Pipeline\Pipeline;
-use SameOldNick\LaravelSuitcase\Contracts\Config\PackConfig;
+use SameOldNick\LaravelSuitcase\Config\PackConfig;
 use SameOldNick\LaravelSuitcase\Contracts\EnvVariables;
 use SameOldNick\LaravelSuitcase\Contracts\Outputter;
 use SameOldNick\LaravelSuitcase\Contracts\PackPipelineStep;

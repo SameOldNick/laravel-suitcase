@@ -3,10 +3,9 @@
 namespace SameOldNick\LaravelSuitcase\Config;
 
 use SameOldNick\LaravelSuitcase\Contracts\Config\Options;
-use SameOldNick\LaravelSuitcase\Contracts\Config\PackConfig as PackConfigContract;
 use SameOldNick\LaravelSuitcase\Contracts\Config\ValidatesConfig;
 
-class PackConfig implements PackConfigContract
+class PackConfig
 {
     public function __construct(
         protected readonly Options $options,
@@ -15,153 +14,96 @@ class PackConfig implements PackConfigContract
         //
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function validate(): void
     {
         $this->getValidator()->validate($this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getExportPath(): string
     {
         return $this->getOptions()->getExportPath();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getPublicPath(): string
     {
         return $this->getOptions()->getPublicPath();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getLaravelPath(): string
     {
         return $this->getOptions()->getLaravelPath();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getZipPath(): string
     {
         return $this->getOptions()->getZipPath();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getEnvFilePath(): string
     {
         return $this->getOptions()->getEnvFilePath();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getDbDumpEnabled(): bool
     {
         return $this->getOptions()->getDbDumpEnabled();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getDbConnections(): array
     {
         return $this->getOptions()->getDbConnections();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getRootFiles(): array
     {
         return $this->getOptions()->getRootFiles();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getLaravelIncludes(): array
     {
         return $this->getOptions()->getLaravelIncludes();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getPublicIncludes(): array
     {
         return $this->getOptions()->getPublicIncludes();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getLaravelExcludes(): array
     {
         return $this->getOptions()->getLaravelExcludes();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getPublicExcludes(): array
     {
         return $this->getOptions()->getPublicExcludes();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getIndexStubPath(): string
     {
         return $this->getOptions()->getIndexStubPath();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getConstantsStubPath(): string
     {
         return $this->getOptions()->getConstantsStubPath();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getRemoteLaravelPath(): string
     {
         return $this->getOptions()->getRemoteLaravelPath();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getRemotePublicPath(): string
     {
         return $this->getOptions()->getRemotePublicPath();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function shouldSkipEnv(): bool
     {
         return $this->getOptions()->shouldSkipEnv();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function shouldSkipVendor(): bool
     {
         return $this->getOptions()->shouldSkipVendor();
