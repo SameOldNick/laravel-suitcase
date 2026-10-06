@@ -14,7 +14,7 @@ class PackForSharedHostingTest extends TestCase
         $this->givenSharedEnvFile();
 
         $config = $this->packConfig();
-        $command = $this->makePackCommand($config);
+        $command = $this->makePackCommand();
 
         $this->assertTrue($this->invoke($command, 'validateConfig', [$config]));
     }
@@ -25,7 +25,7 @@ class PackForSharedHostingTest extends TestCase
         @unlink($this->app->basePath('.env.shared'));
 
         $config = $this->packConfig();
-        $command = $this->makePackCommand($config);
+        $command = $this->makePackCommand();
 
         $this->assertFalse($this->invoke($command, 'validateConfig', [$config]));
 
@@ -42,7 +42,7 @@ class PackForSharedHostingTest extends TestCase
         config(['suitcase.env_file' => 'missing/shared.env']);
 
         $config = $this->packConfig();
-        $command = $this->makePackCommand($config);
+        $command = $this->makePackCommand();
 
         $this->assertFalse($this->invoke($command, 'validateConfig', [$config]));
         $this->assertStringContainsString('Configuration error', $this->commandOutput($command));

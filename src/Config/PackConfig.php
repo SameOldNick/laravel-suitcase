@@ -112,7 +112,7 @@ class PackConfig
     /**
      * Gets the options instance.
      */
-    protected function getOptions(): Options
+    public function getOptions(): Options
     {
         return $this->options;
     }
@@ -120,8 +120,16 @@ class PackConfig
     /**
      * Gets the validator instance.
      */
-    protected function getValidator(): ValidatesConfig
+    public function getValidator(): ValidatesConfig
     {
         return $this->validator;
+    }
+
+    /**
+     * Creates a new PackConfig instance from an Options instance.
+     */
+    public static function createWithDefaultValidator(Options $options): self
+    {
+        return new self($options, new Validators\DefaultValidator);
     }
 }

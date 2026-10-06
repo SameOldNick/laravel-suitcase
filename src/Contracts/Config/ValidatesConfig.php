@@ -6,6 +6,12 @@ use SameOldNick\LaravelSuitcase\Config\PackConfig;
 
 interface ValidatesConfig
 {
-    public function validate(PackConfigContract $config): void;
+    /**
+     * Validate the given PackConfig instance.
+     *
+     * @param  PackConfig  $config  The PackConfig instance to validate.
+     *
+     * @throws \InvalidArgumentException if the configuration is invalid.
+     */
     public function validate(PackConfig $config): void;
 }

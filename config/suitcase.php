@@ -125,4 +125,10 @@ return [
         // If true, the vendor directory will be skipped during export.
         'vendor' => env('SKIP_VENDOR', false),
     ],
+
+    // Path to an alternate config file to use instead of this one.
+    // Can be an absolute path, a path relative to the app's base path, or a
+    // profile name that resolves to config/suitcase.<name>.php.
+    // The --config flag takes precedence over this value.
+    'config_path' => env('SUITCASE_CONFIG', null),
 ];

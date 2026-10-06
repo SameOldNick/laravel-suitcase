@@ -247,7 +247,7 @@ abstract class TestCase extends OrchestraTestCase
      *
      * @param  array<string, mixed>  $options  Console options, e.g. ['--skip-env' => true]
      */
-    protected function makePackCommand(PackConfig $config, array $options = []): PackForSharedHosting
+    protected function makePackCommand(array $options = []): PackForSharedHosting
     {
         $command = new PackForSharedHosting;
 
@@ -262,8 +262,6 @@ abstract class TestCase extends OrchestraTestCase
         $this->setReflected($command, 'input', $input);
         $this->setReflected($command, 'output', $output);
         self::$commandBuffers[$command] = $buffer;
-
-        // $this->invoke($command, 'setConfig', [$config]);
 
         return $command;
     }

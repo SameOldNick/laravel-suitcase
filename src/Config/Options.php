@@ -221,4 +221,51 @@ class Options implements OptionsContract
     {
         return $this->skipVendor;
     }
+
+    /**
+     * Creates a new PackConfig instance from a config file.
+     *
+     * @param  string  $filePath  Path to the config file
+     *
+     * @throws \InvalidArgumentException if the config file does not exist or is not readable
+     */
+    public static function createFromFile(string $filePath): self
+    {
+        $config = require $filePath;
+
+        if (! is_array($config)) {
+            throw new \InvalidArgumentException('Configuration file must return an array.');
+        }
+
+        return self::createFromArray($config);
+    }
+
+    /**
+     * Creates a new PackConfig instance from an array.
+     *
+     * @param  array  $config  Configuration array
+     */
+    public static function createFromArray(array $config): self
+    {
+        return new self(
+            remoteLaravelPath: $config['remote']['laravel_path'] ?? self::DEFAULT_REMOTE_LARAVEL,
+            remotePublicPath: $config['remote']['public_path'] ?? self::DEFAULT_REMOTE_PUBLIC,
+            exportPath: $config['export_dir'] ?? '',
+            zipPath: $config['zip_name'] ?? '',
+            envFilePath: $config['env_file'] ?? '',
+            dbDumpEnabled: $config['db_dump']['enabled'] ?? false,
+            dbConnections: $config['db_dump']['connections'] ?? [],
+            rootFiles: $config['root_files'] ?? [],
+            laravelIncludes: $config['include']['laravel'] ?? [],
+            publicIncludes: $config['include']['public'] ?? [],
+            laravelExcludes: $config['exclude']['laravel'] ?? [],
+            publicExcludes: $config['exclude']['public'] ?? [],
+            indexStub: $config['stubs']['index'] ?? self::INDEX_STUB,
+            constantsStub: $config['stubs']['constants'] ?? self::CONSTANTS_STUB,
+            publicPath: $config['export']['public_path'] ?? null,
+            laravelPath: $config['export']['laravel_path'] ?? null,
+            skipVendor: $config['skip']['vendor'] ?? false,
+            skipEnv: $config['skip']['env'] ?? false,
+        );
+    }
 }
