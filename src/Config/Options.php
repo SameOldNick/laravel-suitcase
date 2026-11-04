@@ -5,7 +5,7 @@ namespace SameOldNick\LaravelSuitcase\Config;
 use Illuminate\Container\Attributes\Config;
 use SameOldNick\LaravelSuitcase\Contracts\Config\Options as OptionsContract;
 
-class Options implements OptionsContract
+readonly class Options implements OptionsContract
 {
     public const CONFIG_ROOT_KEY = 'suitcase';
 
@@ -20,53 +20,53 @@ class Options implements OptionsContract
     /**
      * Path to the public directory on the shared hosting server
      */
-    protected readonly string $publicPath;
+    protected string $publicPath;
 
     /**
      * Path to the Laravel directory on the shared hosting server
      */
-    protected readonly string $laravelPath;
+    protected string $laravelPath;
 
     /**
      * Constructs Options instance
      */
     public function __construct(
         #[Config('suitcase.remote.laravel_path', self::DEFAULT_REMOTE_LARAVEL)]
-        protected readonly string $remoteLaravelPath,
+        protected string $remoteLaravelPath,
         #[Config('suitcase.remote.public_path', self::DEFAULT_REMOTE_PUBLIC)]
-        protected readonly string $remotePublicPath,
+        protected string $remotePublicPath,
         #[Config('suitcase.export_dir', '')]
-        protected readonly string $exportPath,
+        protected string $exportPath,
         #[Config('suitcase.zip_name', '')]
-        protected readonly string $zipPath,
+        protected string $zipPath,
         #[Config('suitcase.env_file', '')]
-        protected readonly string $envFilePath,
+        protected string $envFilePath,
         #[Config('suitcase.db_dump.enabled', false)]
-        protected readonly bool $dbDumpEnabled,
+        protected bool $dbDumpEnabled,
         #[Config('suitcase.db_dump.connections', [])]
-        protected readonly array $dbConnections,
+        protected array $dbConnections,
         #[Config('suitcase.root_files', [])]
-        protected readonly array $rootFiles,
+        protected array $rootFiles,
         #[Config('suitcase.include.laravel', [])]
-        protected readonly array $laravelIncludes,
+        protected array $laravelIncludes,
         #[Config('suitcase.include.public', [])]
-        protected readonly array $publicIncludes,
+        protected array $publicIncludes,
         #[Config('suitcase.exclude.laravel', [])]
-        protected readonly array $laravelExcludes,
+        protected array $laravelExcludes,
         #[Config('suitcase.exclude.public', [])]
-        protected readonly array $publicExcludes,
+        protected array $publicExcludes,
         #[Config('suitcase.stubs.index', self::INDEX_STUB)]
-        protected readonly string $indexStub,
+        protected string $indexStub,
         #[Config('suitcase.stubs.constants', self::CONSTANTS_STUB)]
-        protected readonly string $constantsStub,
+        protected string $constantsStub,
         #[Config('suitcase.export.public_path', null)]
         ?string $publicPath,
         #[Config('suitcase.export.laravel_path', null)]
         ?string $laravelPath,
         #[Config('suitcase.skip.vendor', false)]
-        protected readonly bool $skipVendor,
+        protected bool $skipVendor,
         #[Config('suitcase.skip.env', false)]
-        protected readonly bool $skipEnv,
+        protected bool $skipEnv,
     ) {
         $this->publicPath = $publicPath ?? $this->getExportPath().'/public_html';
         $this->laravelPath = $laravelPath ?? $this->getExportPath().'/laravel';

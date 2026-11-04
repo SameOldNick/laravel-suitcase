@@ -11,7 +11,7 @@ use SameOldNick\LaravelSuitcase\Contracts\Config\ValidatesConfig;
  * Holds the resolved configuration options for a packaging run together with the
  * validator that checks them. Every accessor delegates to the underlying options.
  */
-class PackConfig
+readonly class PackConfig
 {
     /**
      * Create a new PackConfig instance.
@@ -20,8 +20,8 @@ class PackConfig
      * @param  ValidatesConfig  $validator  The validator used to check the options.
      */
     public function __construct(
-        protected readonly Options $options,
-        protected readonly ValidatesConfig $validator
+        protected Options $options,
+        protected ValidatesConfig $validator
     ) {
         //
     }
