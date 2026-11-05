@@ -5,6 +5,17 @@ All notable changes to Laravel Suitcase are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-11-04
+
+### Fixed
+
+- `suitcase:pack --skip-env` and the `skip.env` config option no longer fail config validation when the configured `.env` file does not exist; the env-file path and existence checks are skipped whenever the env export is skipped.
+- Added regression test coverage for packing with `skip.env` enabled and a missing env file.
+
+### Changed
+
+- The `Options` and `PackConfig` config classes are now declared `readonly`.
+
 ## [1.2.0] - 2026-10-05
 
 ### Added
